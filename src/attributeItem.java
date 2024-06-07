@@ -13,10 +13,10 @@ public class attributeItem {
         this.attributeName = attributeName;
         this.attrbutel.setText("<html> <b>"+attributeName+"</b> </html>");
         this.attributeTypeb.addItem("Select attribute...");
-        this.attributeTypeb.addItem("String");
-        this.attributeTypeb.addItem("Number");
-        this.attributeTypeb.addItem("Date");
-        this.attributeTypeb.addItem("Nominal");
+        this.attributeTypeb.addItem("string");
+        this.attributeTypeb.addItem("number");
+        this.attributeTypeb.addItem("date");
+        this.attributeTypeb.addItem("nominal");
         this.attributeTypeb.addItemListener(e ->{
             if (attributeTypeb.getSelectedIndex() == 4){
                 dataInfot.setEnabled(true);

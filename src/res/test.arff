@@ -1,7 +1,7 @@
 @RELATION 'name'
 
-@ATTRIBUTE num1 String
-@ATTRIBUTE num2 String
+@ATTRIBUTE num1 string
+@ATTRIBUTE num2 string
 
 @DATA
 1,2
