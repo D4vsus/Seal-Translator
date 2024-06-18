@@ -17,7 +17,7 @@ public class AttributeItem {
         //add box objects
         this.attributeTypeb.addItem("Select attribute...");
         this.attributeTypeb.addItem("string");
-        this.attributeTypeb.addItem("number");
+        this.attributeTypeb.addItem("numeric");
         this.attributeTypeb.addItem("date");
         this.attributeTypeb.addItem("nominal");
 
@@ -30,6 +30,10 @@ public class AttributeItem {
             //if in the box is selected type date or nominal enable the type
             dataInfot.setEnabled(attributeTypeb.getSelectedIndex() == 4|| attributeTypeb.getSelectedIndex() == 3);
         });
+    }
+
+    public String getAttribute(){
+        return "@attribute " + attributeName + " " + attributeType;
     }
 
     public JPanel getPanel(){

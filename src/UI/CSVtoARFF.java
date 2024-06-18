@@ -3,6 +3,8 @@ package UI;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class CSVtoARFF extends JFrame{
@@ -11,11 +13,11 @@ public class CSVtoARFF extends JFrame{
 
     //logic components
     private String fileName;
-    private String[] dataNames;
+    private final ArrayList<AttributeItem> dataAttributes;
     private StringBuilder data;
 
     //UI components
-    private JPanel MainWindow;
+    private JPanel mainWindow;
     private JButton importCSVb;
     private JButton exportARFFb;
     private JPanel Preprocess;
@@ -25,50 +27,61 @@ public class CSVtoARFF extends JFrame{
     private final GridBagConstraints layout;
 
     //methods
-
     public CSVtoARFF(){
 
         //we set the properties of the window
         this.setBounds(100,100,500,250);
-        this.add(MainWindow);
+        this.setTitle("CSV to ARFF");
+        this.add(mainWindow);
+        this.dataAttributes = new ArrayList<>();
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // we add the layout
         this.layout = new GridBagConstraints();
         this.layout.fill = GridBagConstraints.VERTICAL;
         this.layout.gridy = 0;
 
-        //debugging
-        addAttribute(new AttributeItem("place holder"));
+        //add mnemonics
+        this.importCSVb.setMnemonic('i');
+        this.exportARFFb.setMnemonic('e');
 
         //add listeners
         this.importCSVb.addActionListener(e->{
-            File file = new File ("c:\\");
-            Desktop desktop = Desktop.getDesktop();
             try {
-                desktop.open(file);
+                new FileSelector(this);
+                if (fileName != null) loadCSV(fileName);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
         this.exportARFFb.addActionListener(e->{
-            //exportARFF(this.datasetName.getText(),);
+            try {
+                exportARFF(this.datasetName.getText(),dataAttributes);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         //show the window
         this.setVisible(true);
     }
 
+    public void setCSV(String fileName){
+        this.fileName = fileName;
+    }
+
     public void addAttribute(AttributeItem attributeItem){
         //moves down the layout
         this.layout.gridy += 1;
         this.attribute.add(attributeItem.getPanel(),layout);
+        this.dataAttributes.add(attributeItem);
     }
 
     public void loadCSV(String path){
         try (Scanner scanner = new Scanner(new File(path))){
 
-            // reset the attribute panel
+            //reset the attribute panel
             layout.gridy = 0;
             this.attribute.removeAll();
 
@@ -79,25 +92,32 @@ public class CSVtoARFF extends JFrame{
                 this.fileName = path.split("\\.")[0];
 
                 //get the attributes name and split it
-                this.dataNames = scanner.nextLine().split("[,;]");
+                String[] dataNames = scanner.nextLine().split("[,;]");
+                for (String attribute:dataNames){
+                    addAttribute(new AttributeItem(attribute.replace(" ","-")));
+                }
 
                 //get all the data from the file
                 StringBuilder data = new StringBuilder();
                 while (scanner.hasNextLine()){
-                    data.append(scanner.nextLine());
+                    data.append(scanner.nextLine().replace(";",","));
                     data.append("\n");
                 }
 
                 //save data
                 this.data = data;
+                this.datasetName.setText(this.fileName);
+                this.scroll.revalidate();
             }
 
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(this, ResourceBundle.getBundle("res\\Strings").getString("The.file.didn't.exist.or.didn't.found"),"File not found",JOptionPane.ERROR_MESSAGE,null);
+        } catch (Exception e){
+            JOptionPane.showMessageDialog(this,e.toString(),e.toString(),JOptionPane.ERROR_MESSAGE,null);
         }
     }
 
-    public void exportARFF(String nameDataset,String... dataTypes) throws IOException {
+    public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) throws IOException {
         
         File file = new File(fileName+".arff");
         if (!file.createNewFile()) {
@@ -115,11 +135,10 @@ public class CSVtoARFF extends JFrame{
         writeFile(file, content);
     }
 
-    private String writeAttributes(String... dataTypes){
+    private String writeAttributes(ArrayList<AttributeItem> dataTypes){
         StringBuilder attributes = new StringBuilder();
-        int size = dataNames.length;
-        for (int x = 0;x < size;x++){
-            attributes.append("@attribute ").append(dataNames[x]).append(" ").append(dataTypes[x]).append("\n");
+        for (AttributeItem attribute:dataTypes){
+            attributes.append(attribute.getAttribute()).append("\n");
         }
         return attributes.toString();
     }

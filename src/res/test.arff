@@ -1,8 +1,8 @@
-@RELATION 'name'
+@relation 'test1'
 
-@ATTRIBUTE num1 string
-@ATTRIBUTE num2 string
+@attribute num1 numeric
+@attribute num2 numeric
 
-@DATA
+@data
 1,2
 3,4
