@@ -1,12 +1,19 @@
 package UI;
 
+import exceptions.DuplicatedNameException;
+import exceptions.NotSelectedAttributeException;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.Scanner;
 
+/**
+ * <h1>CSVtoARFF</h1>
+ * <p>The main window and where the main logic is in it</p>
+ * @author D4vsus
+ */
 public class CSVtoARFF extends JFrame{
 
     //variables and objects
@@ -20,13 +27,19 @@ public class CSVtoARFF extends JFrame{
     private JPanel mainWindow;
     private JButton importCSVb;
     private JButton exportARFFb;
-    private JPanel Preprocess;
+    private JPanel preprocess;
     private JTextField datasetName;
     private JScrollPane scroll;
     private JPanel attribute;
     private final GridBagConstraints layout;
 
     //methods
+
+    /**
+     * <h1>CSVtoARFF()</h1>
+     * <p>Instantiate the window</p>
+     * @author D4vsus
+     */
     public CSVtoARFF(){
 
         //we set the properties of the window
@@ -35,6 +48,7 @@ public class CSVtoARFF extends JFrame{
         this.add(mainWindow);
         this.dataAttributes = new ArrayList<>();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setIconImage(new ImageIcon("res/sealIcon.png").getImage());
 
         // we add the layout
         this.layout = new GridBagConstraints();
@@ -51,7 +65,7 @@ public class CSVtoARFF extends JFrame{
                 new FileSelector(this);
                 if (fileName != null) loadCSV(fileName);
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(this,ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE,null);
             }
         });
 
@@ -59,7 +73,9 @@ public class CSVtoARFF extends JFrame{
             try {
                 exportARFF(this.datasetName.getText(),dataAttributes);
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(this,ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE,null);
+            } catch (Exception ex){
+                JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
         });
 
@@ -67,29 +83,58 @@ public class CSVtoARFF extends JFrame{
         this.setVisible(true);
     }
 
+    /**
+     * <h1>setCSV()</h1>
+     * <p>Set the file name</p>
+     * @param fileName : {@link String}
+     * @author D4vsus
+     */
     public void setCSV(String fileName){
         this.fileName = fileName;
     }
 
-    public void addAttribute(AttributeItem attributeItem){
+    /**
+     * <h1>addAttribute()</h1>
+     * <p>Add an attribute to the dataAttributes record and the main window</p>
+     * @param attributeItem : {@link AttributeItem}
+     * @author D4vsus
+     */
+    public void addAttribute(AttributeItem attributeItem) throws DuplicatedNameException {
         //moves down the layout
         this.layout.gridy += 1;
+        for (AttributeItem comparer:dataAttributes) {
+            if (comparer.getAttributeName().equals(attributeItem.getAttributeName())) {
+                throw new DuplicatedNameException(attributeItem.getAttributeName());
+            }
+        }
         this.attribute.add(attributeItem.getPanel(),layout);
         this.dataAttributes.add(attributeItem);
     }
 
+    /**
+     * <h1>loadCSV()</h1>
+     * <p>Load the data to the program</p>
+     * @param path : {@link String}
+     * @author D4vsus
+     */
     public void loadCSV(String path){
         try (Scanner scanner = new Scanner(new File(path))){
 
+            //Preprocess
             //reset the attribute panel
-            layout.gridy = 0;
+            this.layout.gridy = 0;
+            this.dataAttributes.clear();
             this.attribute.removeAll();
+            this.scroll.revalidate();
+            this.preprocess.revalidate();
+
+            //Process
+
+            //get the name of the file
+            this.fileName = path.split("\\.")[0];
 
             //read the CSV
             if (scanner.hasNextLine()){
-
-                //get the name of the file
-                this.fileName = path.split("\\.")[0];
 
                 //get the attributes name and split it
                 String[] dataNames = scanner.nextLine().split("[,;]");
@@ -110,31 +155,62 @@ public class CSVtoARFF extends JFrame{
                 this.scroll.revalidate();
             }
 
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, ResourceBundle.getBundle("res\\Strings").getString("The.file.didn't.exist.or.didn't.found"),"File not found",JOptionPane.ERROR_MESSAGE,null);
+        } catch (DuplicatedNameException e) {
+            JOptionPane.showMessageDialog(this,e.toString(),"Duplicated Name",JOptionPane.ERROR_MESSAGE,null);
+        }  catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this,"The file didn't exist or didn't found","File not found",JOptionPane.ERROR_MESSAGE,null);
         } catch (Exception e){
-            JOptionPane.showMessageDialog(this,e.toString(),e.toString(),JOptionPane.ERROR_MESSAGE,null);
+            JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
     }
 
+    /**
+     * <h1>exportARFF()</h1>
+     * <p>Create the arff file and write it's content</p>
+     * @param nameDataset : {@link String}
+     * @param dataTypes : {@link ArrayList}<{@link AttributeItem}>
+     * @author D4vsus
+     */
     public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) throws IOException {
-        
-        File file = new File(fileName+".arff");
-        if (!file.createNewFile()) {
-            PrintWriter writer = new PrintWriter(file);
-            writer.print("");
-            writer.close();
+        try {
+            //Preprocess
+            //see they select an attribute
+            for (AttributeItem attributeItem : dataAttributes){
+                if (attributeItem.getAttributeType().equals("Select attribute...")){
+                    throw new NotSelectedAttributeException();
+                }
+            }
+
+            //Process
+            File file = new File(fileName + ".arff");
+            if (!file.createNewFile()) {
+                PrintWriter writer = new PrintWriter(file);
+                writer.print("");
+                writer.close();
+            }
+
+            String content = "@relation '" + nameDataset + "'" + "\n" +
+                    "\n" +
+                    writeAttributes(dataTypes) +
+                    "\n" +
+                    "@data" + "\n" + data;
+
+            writeFile(file, content);
+            JOptionPane.showMessageDialog(this, "The field has been created", "Created", JOptionPane.INFORMATION_MESSAGE, null);
+        } catch (NotSelectedAttributeException e) {
+            JOptionPane.showMessageDialog(this,e.toString(),"Not Selected Attribute",JOptionPane.ERROR_MESSAGE,null);
+        } catch (Exception e){
+            JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
-
-        String content = "@relation '" + nameDataset + "'" + "\n" +
-                "\n" +
-                writeAttributes(dataTypes) +
-                "\n" +
-                "@data" + "\n" + data;
-
-        writeFile(file, content);
     }
 
+    /**
+     * <h1>writeAttributes()</h1>
+     * <p>Write all the attributes into the arff file</p>
+     * @param dataTypes : {@link ArrayList}<{@link AttributeItem}>
+     * @return {@link String}
+     * @author D4vsus
+     */
     private String writeAttributes(ArrayList<AttributeItem> dataTypes){
         StringBuilder attributes = new StringBuilder();
         for (AttributeItem attribute:dataTypes){
@@ -143,6 +219,13 @@ public class CSVtoARFF extends JFrame{
         return attributes.toString();
     }
 
+    /**
+     * <h1>writeFile()</h1>
+     * <p>Write the content into the file</p>
+     * @param file : {@link File}
+     * @param content : {@link String}
+     * @author D4vsus
+     */
     private void writeFile(File file,String content) throws IOException {
         FileWriter fw = new FileWriter(file);
         fw.write(content);

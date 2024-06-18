@@ -1,8 +1,0 @@
-@relation 'test1'
-
-@attribute num1 numeric
-@attribute num2 numeric
-
-@data
-1,2
-3,4

@@ -1,24 +1,17 @@
 package main;
 
 import UI.CSVtoARFF;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 
-import java.io.IOException;
+import javax.swing.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) throws IOException {
-        //test1
-        //CSVtoARFF test1 = new CSVtoARFF();
-        //test1.loadCSV("res\\test.CSV");
-        //test1.exportARFF("name","String","String");
-
-        //test2
-        //CSVtoARFF test1 = new CSVtoARFF();
-        //test1.loadCSV("res\\testWithDotCuote.CSV");
-        //test1.exportARFF("name","String","String");
-
-        //test3
-        CSVtoARFF test1 = new CSVtoARFF();
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel( new FlatIntelliJLaf());
+        } catch( Exception ex ) {
+            System.err.println( "Failed to initialize LaF" );
+        }
+        new CSVtoARFF();
     }
 }

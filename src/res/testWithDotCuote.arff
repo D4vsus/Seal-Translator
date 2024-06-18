@@ -1,8 +1,0 @@
-@RELATION 'name'
-
-@ATTRIBUTE num1 String
-@ATTRIBUTE num2 String
-
-@DATA
-1;2
-3;4
