@@ -59,6 +59,7 @@ public class AttributeItem {
     public String getAttribute(){
         StringBuilder string = new StringBuilder("@attribute " + this.attributeName + " " + this.attributeType);
         if (isSelectedNominalDate()){
+            string.append(" ");
             if (this.attributeTypeButton.getSelectedIndex() == 4){
                 string.append("{").append(this.dataInfoText.getText()).append("}");
             } else {
