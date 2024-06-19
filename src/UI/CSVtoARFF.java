@@ -59,6 +59,7 @@ public class CSVtoARFF extends JFrame{
         JMenuBar menu = new JMenuBar();
         JMenuItem credits = new JMenuItem("Credits",'c');
         credits.addActionListener(e->new Credits());
+        credits.setToolTipText("Credits");
         menu.add(credits);
         this.setJMenuBar(menu);
 
