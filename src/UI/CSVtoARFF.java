@@ -44,7 +44,7 @@ public class CSVtoARFF extends JFrame{
 
         //we set the properties of the window
         this.setBounds(100,100,500,250);
-        this.setTitle("CSV to ARFF");
+        this.setTitle("Seal Translator");
         this.add(mainWindow);
         this.dataAttributes = new ArrayList<>();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -55,6 +55,13 @@ public class CSVtoARFF extends JFrame{
         this.layout.fill = GridBagConstraints.VERTICAL;
         this.layout.gridy = 0;
 
+        //we add the menu bar
+        JMenuBar menu = new JMenuBar();
+        JMenuItem credits = new JMenuItem("Credits",'c');
+        credits.addActionListener(e->new Credits());
+        menu.add(credits);
+        this.setJMenuBar(menu);
+
         //add mnemonics
         this.importCSVb.setMnemonic('i');
         this.exportARFFb.setMnemonic('e');
@@ -63,7 +70,7 @@ public class CSVtoARFF extends JFrame{
         this.importCSVb.addActionListener(e->{
             try {
                 new FileSelector(this);
-                if (fileName != null) loadCSV(fileName);
+                if (this.fileName != null) loadCSV(this.fileName);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE,null);
             }
@@ -71,7 +78,7 @@ public class CSVtoARFF extends JFrame{
 
         this.exportARFFb.addActionListener(e->{
             try {
-                exportARFF(this.datasetName.getText(),dataAttributes);
+                exportARFF(this.datasetName.getText(),this.dataAttributes);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE,null);
             } catch (Exception ex){
@@ -102,12 +109,12 @@ public class CSVtoARFF extends JFrame{
     public void addAttribute(AttributeItem attributeItem) throws DuplicatedNameException {
         //moves down the layout
         this.layout.gridy += 1;
-        for (AttributeItem comparer:dataAttributes) {
+        for (AttributeItem comparer:this.dataAttributes) {
             if (comparer.getAttributeName().equals(attributeItem.getAttributeName())) {
                 throw new DuplicatedNameException(attributeItem.getAttributeName());
             }
         }
-        this.attribute.add(attributeItem.getPanel(),layout);
+        this.attribute.add(attributeItem.getPanel(),this.layout);
         this.dataAttributes.add(attributeItem);
     }
 
@@ -175,14 +182,14 @@ public class CSVtoARFF extends JFrame{
         try {
             //Preprocess
             //see they select an attribute
-            for (AttributeItem attributeItem : dataAttributes){
+            for (AttributeItem attributeItem : this.dataAttributes){
                 if (attributeItem.getAttributeType().equals("Select attribute...")){
                     throw new NotSelectedAttributeException();
                 }
             }
 
             //Process
-            File file = new File(fileName + ".arff");
+            File file = new File(this.fileName + ".arff");
             if (!file.createNewFile()) {
                 PrintWriter writer = new PrintWriter(file);
                 writer.print("");
@@ -193,7 +200,7 @@ public class CSVtoARFF extends JFrame{
                     "\n" +
                     writeAttributes(dataTypes) +
                     "\n" +
-                    "@data" + "\n" + data;
+                    "@data" + "\n" + this.data;
 
             writeFile(file, content);
             JOptionPane.showMessageDialog(this, "The field has been created", "Created", JOptionPane.INFORMATION_MESSAGE, null);
