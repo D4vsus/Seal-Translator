@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Credits extends JDialog{
-    private URI URLD4vsus;
-    private URI URLBidusa;
     private JPanel credits;
     private JLabel madeBy;
     private JLabel bidusaImg;
@@ -23,11 +21,6 @@ public class Credits extends JDialog{
         setResizable(false);
         setIconImage(new ImageIcon("res/BIDUSA.jpg").getImage());
         setModal(true);
-
-        try {
-            URLD4vsus = new URI ("https://github.com/D4vsus");
-            URLBidusa = new URI("https://www.profesorescooperantes.org/bidusa");
-
             creator.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             bidusaImg.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -36,9 +29,11 @@ public class Credits extends JDialog{
                 public void mouseClicked(MouseEvent arg0) {
                     if (Desktop.isDesktopSupported()) {
                         try {
-                            Desktop.getDesktop().browse(URLD4vsus);
+                            Desktop.getDesktop().browse(new URI ("https://github.com/D4vsus"));
                         } catch (IOException a) {
                             JOptionPane.showMessageDialog(null, "Error: the browser can't be open");
+                        } catch (URISyntaxException e) {
+                            JOptionPane.showMessageDialog(null, "Error: the URL doesn't exist");
                         }
                     }
                     else {
@@ -52,9 +47,11 @@ public class Credits extends JDialog{
                 public void mouseClicked(MouseEvent arg0) {
                     if (Desktop.isDesktopSupported()) {
                         try {
-                            Desktop.getDesktop().browse(URLBidusa);
+                            Desktop.getDesktop().browse(new URI("https://www.profesorescooperantes.org/bidusa"));
                         } catch (IOException a) {
                             JOptionPane.showMessageDialog(null, "Error: the browser can't be open");
+                        } catch (URISyntaxException e) {
+                            JOptionPane.showMessageDialog(null, "Error: the URL doesn't exist");
                         }
                     }
                     else {
@@ -62,15 +59,6 @@ public class Credits extends JDialog{
                     }
                 }
             });
-
-        } catch (URISyntaxException e) {
-            JOptionPane.showMessageDialog(null, "Error: the URL doesn't exist");
-        }
-
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        new Credits();
     }
 }
