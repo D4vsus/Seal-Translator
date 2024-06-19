@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SealTranslator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SealTranslator_jar</output-path>
+    <root id="archive" name="SealTranslator.jar">
+      <element id="module-output" name="SealTranslator" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/lookAndFeel/flatlaf-3.4.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
