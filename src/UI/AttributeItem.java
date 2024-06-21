@@ -14,7 +14,7 @@ public class AttributeItem {
     private String attributeType;
     private JPanel attributePanel;
     private JComboBox attributeTypeButton;
-    private JLabel attrbuteLabel;
+    private JLabel attributeLabel;
     private JTextField dataInfoText;
 
     //methods
@@ -26,7 +26,7 @@ public class AttributeItem {
      */
     public AttributeItem(String attributeName){
         this.attributeName = attributeName;
-        this.attrbuteLabel.setText("<html> <b>"+attributeName+"</b> </html>");
+        this.attributeLabel.setText("<html> <b>"+attributeName+"</b> </html>");
 
         //add box objects
         this.attributeTypeButton.addItem("Select attribute...");
@@ -36,7 +36,7 @@ public class AttributeItem {
         this.attributeTypeButton.addItem("nominal");
 
         this.attributeType = (String) this.attributeTypeButton.getSelectedItem();
-        this.attrbuteLabel.setToolTipText(attributeName);
+        this.attributeLabel.setToolTipText(attributeName);
 
         this.attributeTypeButton.addItemListener(e ->{
             //get the item selected
@@ -57,13 +57,13 @@ public class AttributeItem {
      * @author D4vsus
      */
     public String getAttribute(){
-        StringBuilder string = new StringBuilder("@attribute " + this.attributeName + " " + this.attributeType);
-        if (isSelectedNominalDate()){
-            string.append(" ");
-            if (this.attributeTypeButton.getSelectedIndex() == 4){
-                string.append("{").append(this.dataInfoText.getText()).append("}");
-            } else {
-                string.append("\"").append(this.dataInfoText.getText()).append("\"");
+        StringBuilder string = new StringBuilder("@attribute " + this.attributeName + " ");
+        if (this.attributeTypeButton.getSelectedIndex() == 4){
+            string.append("{").append(this.dataInfoText.getText()).append("}");
+        } else {
+            string.append(this.attributeType);
+            if (this.attributeTypeButton.getSelectedIndex() == 3){
+                string.append(" ").append("\"").append(this.dataInfoText.getText()).append("\"");
             }
         }
         return string.toString();
