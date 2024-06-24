@@ -159,7 +159,6 @@ public class CSVtoARFF extends JFrame{
 
                 //save data
                 this.data = data;
-                this.datasetName.setText(this.fileName);
                 this.scroll.revalidate();
             }
 
