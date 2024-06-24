@@ -1,6 +1,7 @@
 package UI;
 
 import exceptions.DuplicatedNameException;
+import exceptions.NoDatasetNameException;
 import exceptions.NotSelectedAttributeException;
 
 import javax.swing.*;
@@ -80,8 +81,6 @@ public class CSVtoARFF extends JFrame{
         this.exportARFFb.addActionListener(e->{
             try {
                 exportARFF(this.datasetName.getText(),this.dataAttributes);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this,ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE,null);
             } catch (Exception ex){
                 JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
@@ -135,6 +134,7 @@ public class CSVtoARFF extends JFrame{
             this.attribute.removeAll();
             this.scroll.revalidate();
             this.preprocess.revalidate();
+            this.exportARFFb.setEnabled(true);
 
             //Process
 
@@ -178,9 +178,12 @@ public class CSVtoARFF extends JFrame{
      * @param dataTypes : {@link ArrayList}<{@link AttributeItem}>
      * @author D4vsus
      */
-    public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) throws IOException {
+    public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) {
         try {
             //Preprocess
+            //see if they added the name to the dataset
+            if (this.datasetName.getText().isBlank()) throw new NoDatasetNameException();
+
             //see they select an attribute
             for (AttributeItem attributeItem : this.dataAttributes){
                 if (attributeItem.getAttributeType().equals("Select attribute...")){

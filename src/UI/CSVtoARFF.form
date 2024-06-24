@@ -23,6 +23,7 @@
           <gridbag weightx="1.0" weighty="0.0"/>
         </constraints>
         <properties>
+          <enabled value="false"/>
           <text resource-bundle="res/Strings" key="html.b.export.arff.b.html"/>
           <toolTipText resource-bundle="res/Strings" key="press.to.export.csv.file"/>
         </properties>
