@@ -6,6 +6,8 @@ import exceptions.NotSelectedAttributeException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -23,6 +25,7 @@ public class CSVtoARFF extends JFrame{
     private String fileName;
     private final ArrayList<AttributeItem> dataAttributes;
     private StringBuilder data;
+    private StringBuilder comment;
 
     //UI components
     private JPanel mainWindow;
@@ -48,6 +51,7 @@ public class CSVtoARFF extends JFrame{
         this.setTitle("Seal Translator");
         this.add(mainWindow);
         this.dataAttributes = new ArrayList<>();
+        this.comment = new StringBuilder();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setIconImage(new ImageIcon("res/sealIcon.png").getImage());
 
@@ -60,13 +64,23 @@ public class CSVtoARFF extends JFrame{
         JMenuBar menu = new JMenuBar();
         JMenuItem credits = new JMenuItem("Credits",'c');
         credits.addActionListener(e->new Credits());
-        credits.setToolTipText("Credits");
+        credits.setToolTipText("Credits (Alt + C)");
         menu.add(credits);
+        JMenuItem addComment = new JMenuItem("Add Comment",'a');
+        addComment.addActionListener(e->openComment());
+        addComment.setToolTipText("Add Comment (Alt + A)");
+        menu.add(addComment);
         this.setJMenuBar(menu);
 
         //add mnemonics
-        this.importCSVb.setMnemonic('i');
-        this.exportARFFb.setMnemonic('e');
+        credits.setMnemonic(KeyEvent.VK_C);
+        addComment.setMnemonic(KeyEvent.VK_A);
+        this.importCSVb.setMnemonic(KeyEvent.VK_I);
+        this.exportARFFb.setMnemonic(KeyEvent.VK_E);
+
+        //add menu shortcuts
+        this.mainWindow.registerKeyboardAction(e -> new Credits(), KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        this.mainWindow.registerKeyboardAction(e -> openComment(), KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         //add listeners
         this.importCSVb.addActionListener(e->{
@@ -116,6 +130,16 @@ public class CSVtoARFF extends JFrame{
         }
         this.attribute.add(attributeItem.getPanel(),this.layout);
         this.dataAttributes.add(attributeItem);
+    }
+
+    /**
+     * <h1>openComment()</h1>
+     * <p>open the comment window</p>
+     * @author D4vsus
+     */
+    private void openComment(){
+        Comment commentWindow = new Comment(this.comment);
+        this.comment = new StringBuilder(commentWindow.getComment());
     }
 
     /**
@@ -199,7 +223,9 @@ public class CSVtoARFF extends JFrame{
                 writer.close();
             }
 
-            String content = "@relation '" + nameDataset + "'" + "\n" +
+            String content = writeComment() +
+                    "\n" +
+                    "@relation '" + nameDataset + "'" + "\n" +
                     "\n" +
                     writeAttributes(dataTypes) +
                     "\n" +
@@ -227,6 +253,16 @@ public class CSVtoARFF extends JFrame{
             attributes.append(attribute.getAttribute()).append("\n");
         }
         return attributes.toString();
+    }
+
+    /**
+     * <h1>writeComment()</h1>
+     * <p>Return a comment place at the beginning of the file</p>
+     * @return {@link String}
+     * @author D4vsus
+     */
+    private String writeComment(){
+        return "%" + this.comment.toString().replaceAll("\n","\n%");
     }
 
     /**
