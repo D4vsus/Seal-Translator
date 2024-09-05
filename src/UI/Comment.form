@@ -34,8 +34,8 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="res/Strings" key="ok"/>
-                  <toolTipText resource-bundle="res/Strings" key="press.to.save.the.comment"/>
+                  <text resource-bundle="Strings" key="ok"/>
+                  <toolTipText resource-bundle="Strings" key="press.to.save.the.comment"/>
                 </properties>
               </component>
               <component id="5723f" class="javax.swing.JButton" binding="buttonCancel">
@@ -43,8 +43,8 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="res/Strings" key="cancel"/>
-                  <toolTipText resource-bundle="res/Strings" key="press.to.cancel"/>
+                  <text resource-bundle="Strings" key="cancel"/>
+                  <toolTipText resource-bundle="Strings" key="press.to.cancel"/>
                 </properties>
               </component>
             </children>
@@ -69,7 +69,7 @@
               <component id="6b62" class="javax.swing.JTextArea" binding="commentArea">
                 <constraints/>
                 <properties>
-                  <toolTipText resource-bundle="res/Strings" key="write.here.your.comment"/>
+                  <toolTipText resource-bundle="Strings" key="write.here.your.comment"/>
                 </properties>
               </component>
             </children>
@@ -82,7 +82,7 @@
         </constraints>
         <properties>
           <labelFor value="c381e"/>
-          <text resource-bundle="res/Strings" key="html.b.write.here.your.comment.b.html"/>
+          <text resource-bundle="Strings" key="html.b.write.here.your.comment.b.html"/>
         </properties>
       </component>
     </children>

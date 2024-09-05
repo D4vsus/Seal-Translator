@@ -4,12 +4,14 @@ import exceptions.DuplicatedNameException;
 import exceptions.NoDatasetNameException;
 import exceptions.NotSelectedAttributeException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -53,7 +55,11 @@ public class CSVtoARFF extends JFrame{
         this.dataAttributes = new ArrayList<>();
         this.comment = new StringBuilder();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setIconImage(new ImageIcon("res/sealIcon.png").getImage());
+        try {
+            this.setIconImage(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("sealIcon.png")))).getImage());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+        }
 
         // we add the layout
         this.layout = new GridBagConstraints();

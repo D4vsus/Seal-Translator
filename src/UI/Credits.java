@@ -1,5 +1,6 @@
 package UI;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -7,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 public class Credits extends JDialog{
     private JPanel credits;
@@ -19,7 +21,11 @@ public class Credits extends JDialog{
         setBounds(100,100,500,300);
         setTitle("Credits");
         setResizable(false);
-        setIconImage(new ImageIcon("res/BIDUSA.jpg").getImage());
+        try {
+            setIconImage(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("BIDUSA.jpg")))).getImage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         setModal(true);
             creator.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             bidusaImg.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
