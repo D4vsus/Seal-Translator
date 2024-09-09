@@ -1,16 +1,23 @@
 package UI;
 
 import exceptions.DuplicatedNameException;
+import exceptions.FileNotCSVException;
 import exceptions.NoDatasetNameException;
 import exceptions.NotSelectedAttributeException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -103,6 +110,12 @@ public class CSVtoARFF extends JFrame{
                 exportARFF(this.datasetName.getText(),this.dataAttributes);
             } catch (Exception ex){
                 JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            }
+        });
+
+        this.attribute.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent evt) {
+                fileDropper(evt);
             }
         });
 
@@ -282,5 +295,27 @@ public class CSVtoARFF extends JFrame{
         FileWriter fw = new FileWriter(file);
         fw.write(content);
         fw.close();
+    }
+
+    /**
+     * <h1>fileDropper()</h1>
+     * <p>set the drop file to the attribute panel</p>
+     * @param evt : {@link DropTargetDropEvent}
+     * @author D4vsus
+     */
+    private void fileDropper(DropTargetDropEvent evt){
+        try {
+            evt.acceptDrop(DnDConstants.ACTION_COPY);
+            List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+            for (File file : droppedFiles) {
+                if (file.getCanonicalPath().trim().toLowerCase().contains(".csv")) loadCSV(file.getAbsolutePath());
+                else throw new FileNotCSVException();
+            }
+            evt.dropComplete(true);
+        } catch (ClassCastException | UnsupportedFlavorException ex){
+            JOptionPane.showMessageDialog(this,"Error: you haven't drop a file. Please drop a csv","Error",JOptionPane.ERROR_MESSAGE,null);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+        }
     }
 }
