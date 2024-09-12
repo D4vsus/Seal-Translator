@@ -35,7 +35,7 @@ public class AttributeItem extends Attribute {
         this.attributeTypeButton.addItem("date");
         this.attributeTypeButton.addItem("nominal");
 
-        this.attributeType = (String) this.attributeTypeButton.getSelectedItem();
+        setAttributeType((String)this.attributeTypeButton.getSelectedItem());
         this.attributeLabel.setToolTipText(attributeName);
 
         this.attributeTypeButton.addItemListener(e ->{
@@ -56,6 +56,7 @@ public class AttributeItem extends Attribute {
      * @return {@link String}
      * @author D4vsus
      */
+    @Override
     public String getAttribute(){
         StringBuilder string = new StringBuilder("@attribute " + this.attributeName + " ");
         if (this.attributeTypeButton.getSelectedIndex() == 4){

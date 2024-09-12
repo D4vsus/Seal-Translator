@@ -14,4 +14,12 @@ public class Attribute {
     public String getAttributeName(){return this.attributeName;}
 
     public String getAttributeType(){return this.attributeType;}
+
+    public void setAttributeType(String attributeType) {
+        this.attributeType = attributeType;
+    }
+
+    public String getAttribute(){
+        return "@attribute " + this.attributeName + " " +this.attributeType;
+    }
 }

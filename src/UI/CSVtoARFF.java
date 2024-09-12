@@ -207,10 +207,13 @@ public class CSVtoARFF extends JFrame{
 
         } catch (DuplicatedNameException e) {
             JOptionPane.showMessageDialog(this,e.toString(),"Duplicated Name",JOptionPane.ERROR_MESSAGE,null);
+            this.exportARFFb.setEnabled(false);
         }  catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this,"The file didn't exist or didn't found","File not found",JOptionPane.ERROR_MESSAGE,null);
+            this.exportARFFb.setEnabled(false);
         } catch (Exception e){
             JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            this.exportARFFb.setEnabled(false);
         }
     }
 
