@@ -1,5 +1,7 @@
 package UI;
 
+import logic.Attribute;
+
 import javax.swing.*;
 
 /**
@@ -7,11 +9,9 @@ import javax.swing.*;
  * <p>This Class let you manage attributes, what type they are and export them</p>
  * @author D4vsus
  */
-public class AttributeItem {
+public class AttributeItem extends Attribute {
 
     //variables and objects
-    private final String attributeName;
-    private String attributeType;
     private JPanel attributePanel;
     private JComboBox attributeTypeButton;
     private JLabel attributeLabel;
@@ -25,7 +25,7 @@ public class AttributeItem {
      * @author D4vsus
      */
     public AttributeItem(String attributeName){
-        this.attributeName = attributeName;
+        super(attributeName);
         this.attributeLabel.setText("<html> <b>"+attributeName+"</b> </html>");
 
         //add box objects
@@ -72,10 +72,6 @@ public class AttributeItem {
     public JPanel getPanel(){
         return this.attributePanel;
     }
-
-    public String getAttributeName(){return this.attributeName;}
-
-    public String getAttributeType(){return this.attributeType;}
 
     private boolean isSelectedNominalDate(){return this.attributeTypeButton.getSelectedIndex() == 4|| this.attributeTypeButton.getSelectedIndex() == 3;}
 }

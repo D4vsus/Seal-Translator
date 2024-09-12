@@ -181,7 +181,7 @@ public class CSVtoARFF extends JFrame{
 
             //Process
 
-            //get the name of the file
+            //get the name of the file without the extension CSV
             this.fileName = path.split("\\.")[0];
 
             //read the CSV
@@ -241,6 +241,9 @@ public class CSVtoARFF extends JFrame{
                 writer.print("");
                 writer.close();
             }
+
+            //this.data = new StringBuilder(this.data.toString().replace("'","\\'")
+            //                                                  .replace("\"","\\\""));
 
             String content = writeComment() +
                     "\n" +
