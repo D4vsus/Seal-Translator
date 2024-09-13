@@ -82,26 +82,6 @@ public class AttributeItem extends Attribute {
         });
     }
 
-    /**
-     * <h1>getAttribute()</h1>
-     * <p>Return the ARFF version of the attribute</p>
-     * @return {@link String}
-     * @author D4vsus
-     */
-    @Override
-    public String getAttributeARRF(){
-        StringBuilder string = new StringBuilder("@attribute " + this.attributeName + " ");
-        if (this.attributeTypeButton.getSelectedIndex() == 4){
-            string.append("{").append(this.dataInfoText.getText()).append("}");
-        } else {
-            string.append(this.attributeType);
-            if (this.attributeTypeButton.getSelectedIndex() == 3){
-                string.append(" ").append("\"").append(this.dataInfoText.getText()).append("\"");
-            }
-        }
-        return string.toString();
-    }
-
     public String getAttributeTypeARFF(){
         StringBuilder string = new StringBuilder();
         if (this.attributeTypeButton.getSelectedIndex() == 4){
