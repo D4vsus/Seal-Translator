@@ -19,7 +19,7 @@ public class Attribute {
         this.attributeType = attributeType;
     }
 
-    public String getAttribute(){
+    public String getAttributeARRF(){
         return "@attribute " + this.attributeName + " " +this.attributeType;
     }
 }

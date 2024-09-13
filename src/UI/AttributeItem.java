@@ -35,6 +35,38 @@ public class AttributeItem extends Attribute {
         this.attributeTypeButton.addItem("date");
         this.attributeTypeButton.addItem("nominal");
 
+        setAttributeType((String)attributeTypeButton.getSelectedItem());
+        this.attributeLabel.setToolTipText(attributeName);
+
+        this.attributeTypeButton.addItemListener(e ->{
+            //get the item selected
+            this.attributeType = (String) this.attributeTypeButton.getSelectedItem();
+
+            //if in the box is selected type date or nominal enable the type
+            this.dataInfoText.setEnabled(isSelectedNominalDate());
+
+            //else sweep the text
+            if (!isSelectedNominalDate()) this.dataInfoText.setText("");
+        });
+    }
+
+    /**
+     * <h1>AttributeItem()</h1>
+     * <p>Instantiate the attribute</p>
+     * @param attribute : {@link Attribute}
+     * @author D4vsus
+     */
+    public AttributeItem(Attribute attribute){
+        super(attribute.getAttributeName());
+        this.attributeLabel.setText("<html> <b>"+attributeName+"</b> </html>");
+
+        //add box objects
+        this.attributeTypeButton.addItem("Select attribute...");
+        this.attributeTypeButton.addItem("string");
+        this.attributeTypeButton.addItem("numeric");
+        this.attributeTypeButton.addItem("date");
+        this.attributeTypeButton.addItem("nominal");
+
         setAttributeType((String)this.attributeTypeButton.getSelectedItem());
         this.attributeLabel.setToolTipText(attributeName);
 
@@ -57,8 +89,21 @@ public class AttributeItem extends Attribute {
      * @author D4vsus
      */
     @Override
-    public String getAttribute(){
+    public String getAttributeARRF(){
         StringBuilder string = new StringBuilder("@attribute " + this.attributeName + " ");
+        if (this.attributeTypeButton.getSelectedIndex() == 4){
+            string.append("{").append(this.dataInfoText.getText()).append("}");
+        } else {
+            string.append(this.attributeType);
+            if (this.attributeTypeButton.getSelectedIndex() == 3){
+                string.append(" ").append("\"").append(this.dataInfoText.getText()).append("\"");
+            }
+        }
+        return string.toString();
+    }
+
+    public String getAttributeTypeARFF(){
+        StringBuilder string = new StringBuilder();
         if (this.attributeTypeButton.getSelectedIndex() == 4){
             string.append("{").append(this.dataInfoText.getText()).append("}");
         } else {

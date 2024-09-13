@@ -1,5 +1,6 @@
 package logic;
 
+import exceptions.DuplicatedNameException;
 import exceptions.NotMatchSizeMetadata;
 import exceptions.NullRelation;
 import exceptions.TableOverflow;
@@ -16,37 +17,52 @@ import java.util.HashMap;
  */
 public class DataTable {
     //variables and objects
-    String comments;
-    String relation;
-    ArrayList<Attribute> metaData;
-    HashMap<Integer,ArrayList<String>> table;
+    private String comments;
+    private String relation;
+    private ArrayList<Attribute> metaData;
+    private final HashMap<Integer,ArrayList<String>> table;
 
     //methods
-    public DataTable(ArrayList<Attribute> columns){
-        comments = "";
+    public DataTable(){
+        setComments("");
+        setRelation("");
         table=new HashMap<>();
-        setMetaData(columns);
+        setAttribute(new ArrayList<>());
+    }
+
+    public DataTable(ArrayList<Attribute> columns){
+        setComments("");
+        setRelation("");
+        table=new HashMap<>();
+        setAttribute(columns);
+    }
+
+    public DataTable(Attribute[] columns){
+        setComments("");
+        setRelation("");
+        table=new HashMap<>();
+        setAttribute((ArrayList<Attribute>) Arrays.asList(columns));
     }
 
     //methods
     public DataTable(ArrayList<Attribute> columns,String relation){
-        comments = "";
-        this.relation = relation;
+        setComments("");
+        setRelation(relation);
         table=new HashMap<>();
-        setMetaData(columns);
+        setAttribute(columns);
     }
 
     public void setComments(String comments) {this.comments = comments;}
 
-    public String getComments() {return comments;}
+    public void setAttribute(ArrayList<Attribute> columns){metaData = columns;}
 
-    private void setMetaData(ArrayList<Attribute> columns){
-        metaData = columns;
+    public Attribute getAttribute(int position){
+        return metaData.get(position);
     }
 
     public void setRelation(String relation){this.relation = relation;}
 
-    public ArrayList<Attribute> getMetaData() {return metaData;}
+    public String getComments() {return comments;}
 
     public String getRelation() {return relation;}
 
@@ -55,6 +71,12 @@ public class DataTable {
 
         table.put(table.size(),new ArrayList<>(Arrays.asList(record)));
     }
+
+    public void addAttribute(Attribute attribute) throws DuplicatedNameException {
+        if (metaData.contains(attribute))throw new DuplicatedNameException(attribute.attributeName);
+        metaData.add(attribute);
+    }
+
 
     public void setRow(int row,String @NotNull [] record) throws NotMatchSizeMetadata{
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
@@ -68,8 +90,8 @@ public class DataTable {
         return table.get(row).toArray(new String[0]);
     }
 
-    public ArrayList<Attribute> getAttributes() {
-        return metaData;
+    public Attribute[] getAttributes() {
+        return metaData.toArray(new Attribute[0]);
     }
 
     public String[][] getRows(int rowFrom, int rowTo) throws TableOverflow {
@@ -92,9 +114,16 @@ public class DataTable {
         table.clear();
     }
 
+    public void clearAll(){
+        setComments("");
+        setRelation("");
+        metaData.clear();
+        table.clear();
+    }
+
     public void reorganize(){
         for (int i = table.size(); i > 0;i--)
-            if (table.get(i).isEmpty()) {
+            if (table.get(i) == null) {
                 for (int x = i; x < table.size(); x++) {
                     table.replace(x, table.get(x + 1));
                 }
@@ -146,33 +175,26 @@ public class DataTable {
 
         StringBuilder string = new StringBuilder();
         if (!comments.isBlank())string.append(commentToArff()).append("\n");
+
         string.append("@relation ").append(relation).append("\n");
         for (Attribute attribute:metaData){
-            string.append(attribute.getAttribute()).append('\n');
+            string.append(attribute.getAttributeARRF()).append('\n');
         }
         string.append("@data").append('\n');
         string.append(addData());
         return string.toString();
     }
+    public void loadARFFAttributes(String...attributesType) throws NotMatchSizeMetadata {
+        if (attributesType.length != metaData.size()) throw  new NotMatchSizeMetadata();
 
-    public static void main(String[] args) throws NullRelation {
-
-        ArrayList<Attribute> arrayList = new ArrayList<>();
-        arrayList.add(new Attribute("saludo"));
-        arrayList.add(new Attribute("despedida"));
-        arrayList.get(0).setAttributeType("string");
-        arrayList.get(1).setAttributeType("string");
-
-        DataTable dataTable = new DataTable(arrayList,"Saludos");
-        String[] feed = {"hey","bye"};
-
-        try {
-            dataTable.addRow(feed);
-        } catch (NotMatchSizeMetadata e) {
-            throw new RuntimeException(e);
+        for (int i = 0 ; i < attributesType.length;i++){
+            loadARFFAttribute(i,attributesType[i]);
         }
-
-        System.out.println(dataTable);
-        System.out.println(dataTable.toARFF());
     }
+
+    private void loadARFFAttribute(int attributePosition,String attributeType){
+        metaData.get(attributePosition).setAttributeType(attributeType);
+    }
+
+
 }
