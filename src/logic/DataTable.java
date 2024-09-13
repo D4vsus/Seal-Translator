@@ -13,9 +13,11 @@ import java.util.HashMap;
 /**
  * <h1>DataTable</h1>
  * <p>save the content of a file</p>
+ *
  * @author D4vsus
  */
 public class DataTable {
+
     //variables and objects
     private String comments;
     private String relation;
@@ -23,6 +25,11 @@ public class DataTable {
     private final HashMap<Integer,ArrayList<String>> table;
 
     //methods
+
+    /**
+     * <h1>Constructor</h1>
+     * <p>Instantiate the class</p>
+     */
     public DataTable(){
         setComments("");
         setRelation("");
@@ -30,6 +37,12 @@ public class DataTable {
         setAttribute(new ArrayList<>());
     }
 
+    /**
+     * <h1>Constructor</h1>
+     * <p>Instantiate the class with attributes added</p>
+     *
+     * @param columns {@link ArrayList}<{@link Attribute}>
+     */
     public DataTable(ArrayList<Attribute> columns){
         setComments("");
         setRelation("");
@@ -37,6 +50,12 @@ public class DataTable {
         setAttribute(columns);
     }
 
+    /**
+     * <h1>Constructor</h1>
+     * <p>Instantiate the class with attributes added</p>
+     *
+     * @param columns {@link Attribute[]}
+     */
     public DataTable(Attribute[] columns){
         setComments("");
         setRelation("");
@@ -44,7 +63,13 @@ public class DataTable {
         setAttribute((ArrayList<Attribute>) Arrays.asList(columns));
     }
 
-    //methods
+    /**
+     * <h1>Constructor</h1>
+     * <p>Instantiate the class with attributes added</p>
+     *
+     * @param columns {@link Attribute[]}
+     * @param relation {@link String}
+     */
     public DataTable(ArrayList<Attribute> columns,String relation){
         setComments("");
         setRelation(relation);
@@ -66,34 +91,72 @@ public class DataTable {
 
     public String getRelation() {return relation;}
 
+    /**
+     * <h1>addRow()</h1>
+     * <p>Add a record to the table</p>
+     *
+     * @param record {@link String[]}
+     */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
 
         table.put(table.size(),new ArrayList<>(Arrays.asList(record)));
     }
 
+    /**
+     * <h1>addAttribute()</h1>
+     * <p>Add an attribute to the table</p>
+     *
+     * @param attribute {@link Attribute}
+     */
     public void addAttribute(Attribute attribute) throws DuplicatedNameException {
         if (metaData.contains(attribute))throw new DuplicatedNameException(attribute.attributeName);
         metaData.add(attribute);
     }
 
-
+    /**
+     * <h1>setRow()</h1>
+     *
+     * @param row int
+     * @param record {@link String}
+     */
     public void setRow(int row,String @NotNull [] record) throws NotMatchSizeMetadata{
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
 
         table.put(row,new ArrayList<>(Arrays.asList(record)));
     }
 
+    /**
+     * <h1>getRow()</h1>
+     * <p>Get a specified row</p>
+     *
+     * @param row int
+     * @return {@link String[]}
+     */
     public String[] getRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
 
         return table.get(row).toArray(new String[0]);
     }
 
+    /**
+     * <h1>getAttributes()</h1>
+     * <p>Return the Attributes</p>
+     *
+     * @return {@link Attribute}
+     */
     public Attribute[] getAttributes() {
         return metaData.toArray(new Attribute[0]);
     }
 
+    /**
+     * <h1>getRows()</h1>
+     * <p>get rows from x to y.</br> if from is bigger than row the return you in revers order</p>
+     *
+     * @param rowFrom int
+     * @param rowTo int
+     * @return {@link String[][]}
+     */
     public String[][] getRows(int rowFrom, int rowTo) throws TableOverflow {
         if (table.size() - 1 < rowFrom || rowFrom < 0 || table.size() - 1 < rowTo || rowTo < 0) throw new TableOverflow();
 
@@ -110,10 +173,19 @@ public class DataTable {
         return rows;
     }
 
+    /**
+     * <h1>clearTable()</h1>
+     * <p>Clear the table content</p>
+     *
+     */
     public void clearTable(){
         table.clear();
     }
 
+    /**
+     * <h1>clearAll()</h1>
+     * <p>Clear all the content</p>
+     */
     public void clearAll(){
         setComments("");
         setRelation("");
@@ -121,6 +193,10 @@ public class DataTable {
         table.clear();
     }
 
+    /**
+     * <h1>reorganize()</h1>
+     * <p>Reorganize the table</p>
+     */
     public void reorganize(){
         for (int i = table.size(); i > 0;i--)
             if (table.get(i) == null) {
@@ -132,6 +208,12 @@ public class DataTable {
             }
     }
 
+    /**
+     * <h1>removeRow()</h1>
+     * <p>Remove the selected row</p>
+     *
+     * @param row int
+     */
     public void removeRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
 
@@ -139,11 +221,23 @@ public class DataTable {
         reorganize();
     }
 
+    /**
+     * <h1>isEmpty()</h1>
+     * <p>See if the table is empty</p>
+     *
+     * @return boolean
+     */
     public boolean isEmpty(){
         return table.isEmpty();
     }
 
-    private String addData(){
+    /**
+     * <h1>addData()</h1>
+     * <p>Add the data to the table</p>
+     *
+     * @return {@link String}
+     */
+    private @NotNull String addData(){
         StringBuilder string = new StringBuilder();
         for (int i = 0;i < table.size();i++) {
             for (String cell : table.get(i)){
@@ -154,6 +248,12 @@ public class DataTable {
         return string.toString();
     }
 
+    /**
+     * <h1>toString()</h1>
+     * <p>Return the content as CSV</p>
+     *
+     * @return {@link String}
+     */
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
@@ -166,10 +266,22 @@ public class DataTable {
         return string.toString();
     }
 
+    /**
+     * <h1>commentToArff()</h1>
+     * <p>Pass the comments to ARFF format</p>
+     *
+     * @return {@link String}
+     */
     private String commentToArff(){
         return "%" + comments.replaceAll("\n","\n% ");
     }
 
+    /**
+     * <h1>toARFF()</h1>
+     * <p>Return the content as ARFF </p>
+     *
+     * @return {@link String}
+     */
     public String toARFF() throws NullRelation {
         if (relation == null||relation.isEmpty()) throw new NullRelation();
 
@@ -184,6 +296,13 @@ public class DataTable {
         string.append(addData());
         return string.toString();
     }
+
+    /**
+     * <h1>loadARFFAttributes()</h1>
+     * <p>Load the arff attributes</p>
+     *
+     * @param attributesType {@link String...}
+     */
     public void loadARFFAttributes(String...attributesType) throws NotMatchSizeMetadata {
         if (attributesType.length != metaData.size()) throw  new NotMatchSizeMetadata();
 
@@ -192,6 +311,13 @@ public class DataTable {
         }
     }
 
+    /**
+     * <h1>loadARFFAttribute()</h1>
+     * <p>Load the ARFF file attributes</p>
+     *
+     * @param attributePosition int
+     * @param attributeType {@link String}
+     */
     private void loadARFFAttribute(int attributePosition,String attributeType){
         metaData.get(attributePosition).setAttributeType(attributeType);
     }

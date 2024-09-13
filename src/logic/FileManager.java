@@ -6,6 +6,12 @@ import exceptions.NotSelectedAttributeException;
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * <h1>FileManager</h1>
+ * <p>Manage the IO from the files</p>
+ *
+ * @author D4vsus
+ */
 public class FileManager {
     //variables and objects
 
@@ -14,9 +20,9 @@ public class FileManager {
     /**
      * <h1>writeFile()</h1>
      * <p>Write the content into the file</p>
+     *
      * @param file : {@link File}
      * @param content : {@link String}
-     * @author D4vsus
      */
     private static void writeFile(File file, String content) throws IOException {
         FileWriter fw = new FileWriter(file);
@@ -27,6 +33,7 @@ public class FileManager {
     /**
      * <h1>exportARFF()</h1>
      * <p>Create the arff file and write it's content</p>
+     *
      * @param dataTable : {@link DataTable}
      * @param fileName : {@link String}
      * @author D4vsus
@@ -78,15 +85,27 @@ public class FileManager {
         //get the name of the file without the extension CSV
         String fileName = path.split("\\.")[0];
 
+        String[] dataNames;
+
         //read the CSV
         if (scanner.hasNextLine()) {
 
-            //get the attributes name and split it
-            String[] dataNames = scanner.nextLine().split("[,;]");
+            //delete comments
+            if (Config.isDeleteCSComments()){
+                String possibleComment = "";
+                while (scanner.hasNextLine()){
+                    possibleComment = scanner.nextLine();
+                    if (possibleComment.charAt(0) != '#') break;
+                }
+                dataNames = possibleComment.split("[,;]");
+            } else {
+                //get the attributes name and split it
+                dataNames = scanner.nextLine().split("[,;]");
+            }
+
             for (String attribute : dataNames) {
                 dataTable.addAttribute(new Attribute(attribute.replace(" ", "-")));
             }
-
             //get all the data from the file
             StringBuilder data = new StringBuilder();
             while (scanner.hasNextLine()) {
