@@ -8,9 +8,12 @@ import java.awt.event.*;
 /**
  * <h1>ConfigWindow</h1>
  * <p>Open the configuration window</p>
+ *
  * @author D4vsus
  */
 public class ConfigWindow extends JDialog {
+
+    //variables and objects
     private JPanel content;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -21,6 +24,7 @@ public class ConfigWindow extends JDialog {
     private JRadioButton deleteCSComments;
     private JScrollPane scroll;
 
+    //methods
     /**
      * <h1>Constructor</h1>
      * <p>Initialize the class and set it visible</p>

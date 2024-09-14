@@ -2,6 +2,7 @@ package UI;
 
 import exceptions.DuplicatedNameException;
 import exceptions.FileNotCSVException;
+import exceptions.ImportException;
 import exceptions.NotSelectedAttributeException;
 import logic.Attribute;
 import logic.DataTable;
@@ -9,6 +10,7 @@ import logic.FileManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -24,6 +26,7 @@ import java.util.List;
 /**
  * <h1>CSVtoARFF</h1>
  * <p>The main window and where the main logic is in it</p>
+ *
  * @author D4vsus
  */
 public class CSVtoARFF extends JFrame{
@@ -50,12 +53,12 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>CSVtoARFF()</h1>
      * <p>Instantiate the window</p>
-     * @author D4vsus
      */
     public CSVtoARFF(){
         //initialize not graphical objects
         this.dataAttributes = new ArrayList<>();
         this.table = new DataTable();
+        this.fileName = "";
 
         //set the properties of the window
         this.setBounds(100,100,500,250);
@@ -107,10 +110,9 @@ public class CSVtoARFF extends JFrame{
         //add listeners
         this.importCSVb.addActionListener(e->{
             try {
-                new FileSelector(this);
-                if (this.fileName != null) loadCSV(this.fileName);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this,ex.toString(),"IOException",JOptionPane.ERROR_MESSAGE,null);
+                openFileChooser();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
         });
 
@@ -135,8 +137,8 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>setCSV()</h1>
      * <p>Set the file name</p>
+     *
      * @param fileName : {@link String}
-     * @author D4vsus
      */
     public void setCSV(String fileName){
         this.fileName = fileName;
@@ -145,8 +147,8 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>addAttribute()</h1>
      * <p>Add an attribute to the dataAttributes record and the main window</p>
+     *
      * @param attributeItem : {@link AttributeItem}
-     * @author D4vsus
      */
     public void addAttribute(AttributeItem attributeItem) throws DuplicatedNameException {
         //moves down the layout
@@ -163,7 +165,6 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>openComment()</h1>
      * <p>open the comment window</p>
-     * @author D4vsus
      */
     private void openComment(){
         Comment commentWindow = new Comment(new StringBuilder(table.getComments()));
@@ -173,8 +174,8 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>loadCSV()</h1>
      * <p>Load the data to the program</p>
+     *
      * @param path : {@link String}
-     * @author D4vsus
      */
     public void loadCSV(String path){
         try{
@@ -212,9 +213,9 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>exportARFF()</h1>
      * <p>Create the arff file and write it's content</p>
+     *
      * @param nameDataset : {@link String}
      * @param dataTypes : {@link ArrayList}<{@link AttributeItem}>
-     * @author D4vsus
      */
     public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) {
         try {
@@ -237,8 +238,8 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>fileDropper()</h1>
      * <p>set the drop file to the attribute panel</p>
+     *
      * @param evt : {@link DropTargetDropEvent}
-     * @author D4vsus
      */
     private void fileDropper(DropTargetDropEvent evt){
         try {
@@ -253,6 +254,27 @@ public class CSVtoARFF extends JFrame{
             JOptionPane.showMessageDialog(this,"Error: you haven't drop a file. Please drop a csv","Error",JOptionPane.ERROR_MESSAGE,null);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+        }
+    }
+
+    /**
+     * <h1>openFileChooser()</h1>
+     * <p>Open the file chooser and import it</p>
+     *
+     * @throws IOException
+     * @throws ImportException
+     */
+    private void openFileChooser() throws IOException, ImportException {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                ".csv", "csv");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            this.fileName = chooser.getSelectedFile().getCanonicalPath();
+            if (!this.fileName.isBlank()) loadCSV(this.fileName);
+        } else if (returnVal == JFileChooser.ERROR_OPTION) {
+            throw new ImportException();
         }
     }
 }

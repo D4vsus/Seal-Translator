@@ -13,7 +13,6 @@ public class Attribute {
     protected String attributeType;
 
     //methods
-
     /**
      * <h1>Constructor</h1>
      * <p>Instantiate the class</p>

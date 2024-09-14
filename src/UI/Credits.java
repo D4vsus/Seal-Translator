@@ -10,7 +10,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
+/**
+ * <h1>Credits</h1>
+ * <p>Open the credits window</p>
+ *
+ * @author D4vsus
+ */
 public class Credits extends JDialog{
+
     private JPanel credits;
     private JLabel madeBy;
     private JLabel bidusaImg;

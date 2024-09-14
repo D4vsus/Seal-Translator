@@ -6,7 +6,8 @@ import javax.swing.*;
 
 /**
  * <h1>AttributeItem</h1>
- * <p>This Class let you manage attributes, what type they are and export them</p>
+ * <p>Manage attributes UI</p>
+ *
  * @author D4vsus
  */
 public class AttributeItem extends Attribute {
@@ -21,8 +22,8 @@ public class AttributeItem extends Attribute {
     /**
      * <h1>AttributeItem()</h1>
      * <p>Instantiate the attribute</p>
+     *
      * @param attributeName : {@link String}
-     * @author D4vsus
      */
     public AttributeItem(String attributeName){
         super(attributeName);
@@ -53,6 +54,7 @@ public class AttributeItem extends Attribute {
     /**
      * <h1>AttributeItem()</h1>
      * <p>Instantiate the attribute</p>
+     *
      * @param attribute : {@link Attribute}
      * @author D4vsus
      */
@@ -82,6 +84,12 @@ public class AttributeItem extends Attribute {
         });
     }
 
+    /**
+     * <h1>getAttributeTypeARFF()</h1>
+     * <p>Return the attribute in type ARFF</p>
+     *
+     * @return {@link String}
+     */
     public String getAttributeTypeARFF(){
         StringBuilder string = new StringBuilder();
         if (this.attributeTypeButton.getSelectedIndex() == 4){
@@ -95,9 +103,21 @@ public class AttributeItem extends Attribute {
         return string.toString();
     }
 
+    /**
+     * <h1>getPanel()</h1>
+     * <p>Return the panel UI</p>
+     *
+     * @return {@link JPanel}
+     */
     public JPanel getPanel(){
         return this.attributePanel;
     }
 
+    /**
+     * <h1>isSelectedNominalDate()</h1>
+     * <p>Return if selected or nominal is selected</p>
+     *
+     * @return boolean
+     */
     private boolean isSelectedNominalDate(){return this.attributeTypeButton.getSelectedIndex() == 4|| this.attributeTypeButton.getSelectedIndex() == 3;}
 }

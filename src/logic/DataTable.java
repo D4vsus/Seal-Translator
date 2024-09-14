@@ -25,7 +25,6 @@ public class DataTable {
     private final HashMap<Integer,ArrayList<String>> table;
 
     //methods
-
     /**
      * <h1>Constructor</h1>
      * <p>Instantiate the class</p>
@@ -81,13 +80,13 @@ public class DataTable {
 
     public void setAttribute(ArrayList<Attribute> columns){metaData = columns;}
 
-    public Attribute getAttribute(int position){
-        return metaData.get(position);
-    }
-
     public void setRelation(String relation){this.relation = relation;}
 
     public String getComments() {return comments;}
+
+    public Attribute getAttribute(int position){
+        return metaData.get(position);
+    }
 
     public String getRelation() {return relation;}
 
@@ -96,6 +95,7 @@ public class DataTable {
      * <p>Add a record to the table</p>
      *
      * @param record {@link String[]}
+     * @throws NotMatchSizeMetadata
      */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
@@ -108,9 +108,11 @@ public class DataTable {
      * <p>Add an attribute to the table</p>
      *
      * @param attribute {@link Attribute}
+     * @throws DuplicatedNameException
      */
     public void addAttribute(Attribute attribute) throws DuplicatedNameException {
         if (metaData.contains(attribute))throw new DuplicatedNameException(attribute.attributeName);
+
         metaData.add(attribute);
     }
 
@@ -119,6 +121,7 @@ public class DataTable {
      *
      * @param row int
      * @param record {@link String}
+     * @throws NotMatchSizeMetadata
      */
     public void setRow(int row,String @NotNull [] record) throws NotMatchSizeMetadata{
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
@@ -132,6 +135,7 @@ public class DataTable {
      *
      * @param row int
      * @return {@link String[]}
+     * @throws TableOverflow
      */
     public String[] getRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
@@ -156,6 +160,7 @@ public class DataTable {
      * @param rowFrom int
      * @param rowTo int
      * @return {@link String[][]}
+     * @throws TableOverflow
      */
     public String[][] getRows(int rowFrom, int rowTo) throws TableOverflow {
         if (table.size() - 1 < rowFrom || rowFrom < 0 || table.size() - 1 < rowTo || rowTo < 0) throw new TableOverflow();
@@ -213,6 +218,7 @@ public class DataTable {
      * <p>Remove the selected row</p>
      *
      * @param row int
+     * @throws TableOverflow
      */
     public void removeRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
@@ -281,6 +287,7 @@ public class DataTable {
      * <p>Return the content as ARFF </p>
      *
      * @return {@link String}
+     * @throws NullRelation
      */
     public String toARFF() throws NullRelation {
         if (relation == null||relation.isEmpty()) throw new NullRelation();
@@ -302,6 +309,7 @@ public class DataTable {
      * <p>Load the arff attributes</p>
      *
      * @param attributesType {@link String...}
+     * @throws NotMatchSizeMetadata
      */
     public void loadARFFAttributes(String...attributesType) throws NotMatchSizeMetadata {
         if (attributesType.length != metaData.size()) throw  new NotMatchSizeMetadata();
@@ -321,6 +329,4 @@ public class DataTable {
     private void loadARFFAttribute(int attributePosition,String attributeType){
         metaData.get(attributePosition).setAttributeType(attributeType);
     }
-
-
 }

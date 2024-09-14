@@ -21,10 +21,10 @@ public class Comment extends JDialog {
     private JPanel commentPanel;
 
     //methods
-
     /**
      * <h1>Constructor()</h1>
      * <p>Create the window</p>
+     *
      * @param savedComment : {@link StringBuilder}
      */
     public Comment(StringBuilder savedComment) {
@@ -55,7 +55,6 @@ public class Comment extends JDialog {
     /**
      * <h1>onOk()</h1>
      * <p>Let the window dispose</p>
-     * @author D4vsus
      */
     private void onOK() {
         JOptionPane.showMessageDialog(this, "Comment added", "Comment", JOptionPane.INFORMATION_MESSAGE, null);
@@ -65,7 +64,6 @@ public class Comment extends JDialog {
     /**
      * <h1>onCancel()</h1>
      * <p>Let the window dispose deleting the comment</p>
-     * @author D4vsus
      */
     private void onCancel() {
         commentArea.setText("");
@@ -75,8 +73,8 @@ public class Comment extends JDialog {
     /**
      * <h1>getComment()</h1>
      * <p>return the text comment</p>
+     *
      * @return {@link String}
-     * @author D4vsus
      */
     public String getComment(){
         return commentArea.getText();

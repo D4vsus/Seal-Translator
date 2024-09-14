@@ -13,10 +13,8 @@ import java.util.Scanner;
  * @author D4vsus
  */
 public class FileManager {
-    //variables and objects
 
     //methods
-
     /**
      * <h1>writeFile()</h1>
      * <p>Write the content into the file</p>
@@ -62,7 +60,6 @@ public class FileManager {
             //                                                  .replace("\"","\\\""));
 
         writeFile(file, dataTable.toARFF());
-            //JOptionPane.showMessageDialog(null, "The field has been created", "Created", JOptionPane.INFORMATION_MESSAGE, null);
     }
 
     /**
@@ -106,6 +103,7 @@ public class FileManager {
             for (String attribute : dataNames) {
                 dataTable.addAttribute(new Attribute(attribute.replace(" ", "-")));
             }
+
             //get all the data from the file
             StringBuilder data = new StringBuilder();
             while (scanner.hasNextLine()) {
