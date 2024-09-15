@@ -1,16 +1,17 @@
 package UI;
 
-import exceptions.DuplicatedNameException;
-import exceptions.FileNotCSVException;
-import exceptions.ImportException;
-import exceptions.NotSelectedAttributeException;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.ui.FlatTextBorder;
+import exceptions.*;
 import logic.Attribute;
 import logic.DataTable;
 import logic.FileManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -177,7 +178,7 @@ public class CSVtoARFF extends JFrame{
      *
      * @param path : {@link String}
      */
-    public void loadCSV(String path){
+    public void loadFile(String path){
         try{
             //Preprocess
             //reset the attribute panel
@@ -191,7 +192,7 @@ public class CSVtoARFF extends JFrame{
             //Process
             //get the name of the file without the extension CSV
             this.fileName = path.split("\\.")[0];
-            FileManager.loadCSV(table,path);
+            FileManager.loadFile(table,path);
             for (Attribute attribute : table.getAttributes()) {
                 addAttribute(new AttributeItem(attribute));
             }
@@ -219,6 +220,7 @@ public class CSVtoARFF extends JFrame{
      */
     public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) {
         try {
+            if (datasetName.getText().isBlank()) throw new NoDatasetNameException();
             table.setRelation(datasetName.getText());
             ArrayList<String> attributesType = new ArrayList<>();
             for (AttributeItem dataType : dataAttributes){
@@ -226,8 +228,13 @@ public class CSVtoARFF extends JFrame{
             }
             table.loadARFFAttributes(attributesType.toArray(new String[0]));
             FileManager.exportARFF(table,fileName);
+
+            datasetName.setBorder(new FlatTextBorder());
             JOptionPane.showMessageDialog(this, "The field has been created", "Created", JOptionPane.INFORMATION_MESSAGE, null);
 
+        } catch (NoDatasetNameException e){
+            datasetName.setBorder(new LineBorder(new Color(255, 0, 0),2));
+            JOptionPane.showMessageDialog(this,e.toString(),"Not Selected Attribute",JOptionPane.ERROR_MESSAGE,null);
         } catch (NotSelectedAttributeException e) {
             JOptionPane.showMessageDialog(this,e.toString(),"Not Selected Attribute",JOptionPane.ERROR_MESSAGE,null);
         } catch (Exception e){
@@ -246,8 +253,10 @@ public class CSVtoARFF extends JFrame{
             evt.acceptDrop(DnDConstants.ACTION_COPY);
             List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             for (File file : droppedFiles) {
-                if (file.getCanonicalPath().trim().toLowerCase().contains(".csv")) loadCSV(file.getAbsolutePath());
-                else throw new FileNotCSVException();
+                if (Arrays.stream(FileManager.SUPPORTEDFORMATS).toList().contains(file.getCanonicalPath().trim().toLowerCase().split("\\.")[1])) loadFile(file.getAbsolutePath());
+                else {
+                    throw new FileFormatNotRecognisedException();
+                }
             }
             evt.dropComplete(true);
         } catch (ClassCastException | UnsupportedFlavorException ex){
@@ -265,14 +274,19 @@ public class CSVtoARFF extends JFrame{
      * @throws ImportException
      */
     private void openFileChooser() throws IOException, ImportException {
+        //initialize File Chooser
         JFileChooser chooser = new JFileChooser();
+
+        //open file format supported
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                ".csv", "csv");
+                String.join(",",FileManager.SUPPORTEDFORMATS),FileManager.SUPPORTEDFORMATS);
         chooser.setFileFilter(filter);
+
+        //see if they selected a file
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             this.fileName = chooser.getSelectedFile().getCanonicalPath();
-            if (!this.fileName.isBlank()) loadCSV(this.fileName);
+            if (!this.fileName.isBlank()) loadFile(this.fileName);
         } else if (returnVal == JFileChooser.ERROR_OPTION) {
             throw new ImportException();
         }

@@ -6,6 +6,7 @@ import java.awt.event.*;
 /**
  * <h1>Comment</h1>
  * <p>A dialog to write a comment on the ARFF file</p>
+ *
  * @author D4vsus
  */
 public class Comment extends JDialog {
@@ -30,6 +31,7 @@ public class Comment extends JDialog {
     public Comment(StringBuilder savedComment) {
         setContentPane(contentPane);
         setModal(true);
+        setTitle("Comment");
         setBounds(100,100,400,200);
         getRootPane().setDefaultButton(buttonOK);
         commentArea.setText(savedComment.toString());

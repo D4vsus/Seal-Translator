@@ -34,6 +34,7 @@ public class ConfigWindow extends JDialog {
         //Set up the window
         setContentPane(content);
         setBounds(100,100,500,250);
+        setTitle("Configuration");
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 

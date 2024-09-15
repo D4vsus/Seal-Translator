@@ -3,8 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/SealTranslator_jar</output-path>
     <root id="archive" name="SealTranslator.jar">
       <element id="module-output" name="SealTranslator" />
-      <element id="library" level="project" name="flatlaf-3.4.1" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/src/lookAndFeel/flatlaf-3.4.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/main/java/lookAndFeel/flatlaf-3.4.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

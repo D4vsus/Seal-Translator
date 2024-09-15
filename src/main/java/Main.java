@@ -1,5 +1,3 @@
-package main;
-
 import UI.CSVtoARFF;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
