@@ -1,6 +1,5 @@
 package UI;
 
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.ui.FlatTextBorder;
 import exceptions.*;
 import logic.Attribute;
@@ -11,7 +10,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -201,12 +199,15 @@ public class CSVtoARFF extends JFrame{
 
         } catch (DuplicatedNameException e) {
             JOptionPane.showMessageDialog(this,e.toString(),"Duplicated Name",JOptionPane.ERROR_MESSAGE,null);
+            table.clearAll();
             this.exportARFFb.setEnabled(false);
         }  catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this,"The file didn't exist or didn't found","File not found",JOptionPane.ERROR_MESSAGE,null);
+            table.clearAll();
             this.exportARFFb.setEnabled(false);
         } catch (Exception e){
             JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            table.clearAll();
             this.exportARFFb.setEnabled(false);
         }
     }

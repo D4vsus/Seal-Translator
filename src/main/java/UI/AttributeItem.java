@@ -1,8 +1,11 @@
 package UI;
 
 import logic.Attribute;
+import logic.DataTable;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * <h1>AttributeItem</h1>

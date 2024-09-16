@@ -98,8 +98,13 @@ public class DataTable {
      * @throws NotMatchSizeMetadata
      */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
-        if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
-
+        if (record.length != metaData.size()) {
+            System.out.println(metaData.stream().toList());
+            System.out.println(Arrays.stream(record).toList());
+            System.out.println(metaData.size());
+            System.out.println(record.length);
+            throw new NotMatchSizeMetadata();
+        }
         table.put(table.size(),new ArrayList<>(Arrays.asList(record)));
     }
 
@@ -328,5 +333,9 @@ public class DataTable {
      */
     private void loadARFFAttribute(int attributePosition,String attributeType){
         metaData.get(attributePosition).setAttributeType(attributeType);
+    }
+
+    public int size(){
+        return table.size();
     }
 }

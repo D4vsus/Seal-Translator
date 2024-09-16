@@ -15,8 +15,8 @@ public class Config {
     public static boolean isDeleteCSComments() {
         return deleteCSComments;
     }
-
     public static void setDeleteCSComments(boolean deleteCSComments) {
         Config.deleteCSComments = deleteCSComments;
     }
+
 }

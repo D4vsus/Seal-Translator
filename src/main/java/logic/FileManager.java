@@ -1,6 +1,9 @@
 package logic;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import exceptions.*;
 
@@ -8,6 +11,7 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook; // For .xlsx files
@@ -80,7 +84,24 @@ public class FileManager {
      */
     public static void loadCSV(DataTable dataTable, String path) throws IOException, DuplicatedNameException, NotMatchSizeMetadata {
 
-        try (CSVReader reader = new CSVReader(new FileReader(path))) {
+        BufferedReader preprocess = new BufferedReader(new FileReader(path));
+        StringBuilder content = new StringBuilder();
+
+        //delete CSV comments "#"
+        if (Config.isDeleteCSComments()) {
+            content.append(preprocess.lines()
+                    .filter(line -> !line.trim().startsWith("#")) // Ignore lines starting with #
+                    .collect(Collectors.joining("\n"))
+                    .replace(';', ',')
+            );
+        } else {
+            content.append(preprocess.lines()
+                    .collect(Collectors.joining("\n"))
+                    .replace(';', ','));
+        }
+
+        CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
+        try (CSVReader reader = new CSVReaderBuilder(new StringReader(content.toString())).withCSVParser(parser).build()) {
             List<String[]> records = reader.readAll();  // Read all records
 
             // Skip the header (if the first row is a header)
