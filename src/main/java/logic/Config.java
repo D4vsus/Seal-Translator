@@ -10,6 +10,7 @@ public class Config {
 
     //variables and objects
     private static boolean deleteCSComments = true;
+    private static boolean autoAssign = false;
 
     //methods
     public static boolean isDeleteCSComments() {
@@ -19,4 +20,6 @@ public class Config {
         Config.deleteCSComments = deleteCSComments;
     }
 
+    public static boolean isAutoAssign() {return autoAssign;}
+    public static void setAutoAssign(boolean autoAssign) {Config.autoAssign = autoAssign;}
 }

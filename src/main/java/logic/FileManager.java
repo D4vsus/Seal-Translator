@@ -19,6 +19,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook; // For .xlsx files
 import org.apache.poi.hssf.usermodel.HSSFWorkbook; // For .xls files
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
  * <h1>FileManager</h1>
  * <p>Manage the IO from the files</p>
@@ -200,10 +202,14 @@ public class FileManager {
      * @throws FileFormatNotRecognisedException
      */
     public static void loadFile(DataTable dataTable, @NotNull String path) throws DuplicatedNameException, NotMatchSizeMetadata, IOException, FileFormatNotRecognisedException {
+        //clear all the table
         dataTable.clearAll();
-        if (path.endsWith(".csv")) loadCSV(dataTable,path);
-        else if (path.endsWith(".xls") || path.endsWith(".xlsx")) loadXLSAndXSLX(dataTable,path);
-        else throw new FileFormatNotRecognisedException();
+
+        FileNameExtensionFilter extensionFilter = new FileNameExtensionFilter(String.join(",",FileManager.SUPPORTEDFORMATS),FileManager.SUPPORTEDFORMATS);
+        File file = new File(path);
+        if (!extensionFilter.accept(file)) throw new FileFormatNotRecognisedException();
+        if (path.trim().toLowerCase().endsWith(".csv")) loadCSV(dataTable,path);
+        if (path.trim().toLowerCase().endsWith(".xls") || path.trim().toLowerCase().endsWith(".xlsx")) loadXLSAndXSLX(dataTable,path);
     }
 
 }

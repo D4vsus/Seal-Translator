@@ -2,6 +2,8 @@ package UI;
 
 import com.formdev.flatlaf.ui.FlatTextBorder;
 import exceptions.*;
+import logic.AutoAssign;
+import logic.Config;
 import logic.DataTable;
 import logic.FileManager;
 
@@ -183,6 +185,10 @@ public class CSVtoARFF extends JFrame{
             FileManager.loadFile(table,path);
             for (AttributeItem attribute : table.getAttributes()) {
                 addAttributeToPanel(attribute);
+            }
+
+            if (Config.isAutoAssign()) {
+                AutoAssign.autoAssignAttributes(table);
             }
 
             this.scroll.revalidate();

@@ -1,5 +1,6 @@
 package UI;
 
+import exceptions.ArffAttributeNotRecognised;
 import logic.Attribute;
 
 import javax.swing.*;
@@ -102,6 +103,42 @@ public class AttributeItem extends Attribute {
         return string.toString();
     }
 
+    /**
+     * <h1>setAttributeTypeARFF()</h1>
+     * <p>Set the attribute in type ARFF</p>
+     *
+     * @param format {@link String...}(first the type, second for date or nominal)
+     */
+    public void setAttributeTypeARFF(String... format) throws ArffAttributeNotRecognised {
+        switch (format[0]){
+            case "string":
+                this.attributeTypeButton.setSelectedIndex(1);
+                break;
+
+            case "numeric":
+                this.attributeTypeButton.setSelectedIndex(2);
+                break;
+
+            case "date":
+                this.attributeTypeButton.setSelectedIndex(3);
+                this.dataInfoText.setText(format[1]);
+                break;
+
+            case "nominal":
+                this.attributeTypeButton.setSelectedIndex(4);
+                this.dataInfoText.setText(format[1]);
+                break;
+            default:
+                throw new ArffAttributeNotRecognised();
+        }
+    }
+
+    /**
+     * <h1>toARFF()</h1>
+     * <p>Pass the attribute to ARFF</p>
+     *
+     * @return {@link String}
+     */
     public String toARFF(){
       return "@attribute " + this.getAttributeName() +" "+  getAttributeTypeARFF();
     }

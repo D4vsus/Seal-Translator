@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * <h1>DataTable</h1>
- * <p>save the content of a file</p>
+ * <p>Save the content in a tables (HashMap<Integer,ArrayList<String>>) and export it to formats CSV (toString()) and ARFF</p>
  *
  * @author D4vsus
  */
@@ -150,13 +150,31 @@ public class DataTable {
      * <p>Get a specified row</p>
      *
      * @param row int
-     * @return {@link String[]}
+     * @return {@link String}[]
      * @throws TableOverflow
      */
     public String[] getRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
 
         return table.get(row).toArray(new String[0]);
+    }
+
+    /**
+     * <h1>getColumn()</h1>
+     * <p>Get a specified column</p>
+     *
+     * @param numColumn int
+     * @return {@link HashMap}<{@link Integer},{@link String}>
+     * @throws TableOverflow
+     */
+    public HashMap<Integer,String> getColumn(int numColumn) throws TableOverflow {
+        if (metaData.size() - 1 < numColumn || numColumn < 0) throw new TableOverflow();
+        HashMap <Integer,String> column = new HashMap<>();
+        for (int i = 0;i < table.size();i++){
+            column.put(i,table.get(i).get(numColumn));
+        }
+
+        return column;
     }
 
     /**
@@ -320,6 +338,12 @@ public class DataTable {
         return string.toString();
     }
 
+    /**
+     * <h1>size()</h1>
+     * <p>Get the size of the table</p>
+     *
+     * @return int
+     */
     public int size(){
         return table.size();
     }

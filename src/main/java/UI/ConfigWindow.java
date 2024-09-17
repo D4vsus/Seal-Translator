@@ -1,9 +1,12 @@
 package UI;
 
+import exceptions.BatchFormatException;
+import logic.AutoAssign;
 import logic.Config;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.regex.Pattern;
 
 /**
  * <h1>ConfigWindow</h1>
@@ -18,11 +21,14 @@ public class ConfigWindow extends JDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
     private JPanel okCancelApplyPane;
-    private JPanel optionsPane;
     private JPanel buttonsPanel;
     private JButton buttonApply;
-    private JRadioButton deleteCSComments;
     private JScrollPane scroll;
+    private JPanel optionPanel;
+    private JRadioButton deleteCSComments;
+    private JRadioButton autoAssign;
+    private JLabel batchLabel;
+    private JTextField batchAutoAssignTextField;
 
     //methods
     /**
@@ -42,22 +48,15 @@ public class ConfigWindow extends JDialog {
         setDefaultConfiguration();
 
         //Listeners
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        buttonOK.addActionListener(e -> onOK());
 
-        buttonApply.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onApply();
-            }
-        });
+        buttonApply.addActionListener(e -> onApply());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
+        buttonCancel.addActionListener(e -> onCancel());
+
+        autoAssign.addActionListener(e-> {
+            batchAutoAssignTextField.setEnabled(autoAssign.isSelected());
+            batchAutoAssignTextField.setText("max");
         });
 
         // call onCancel() when cross is clicked
@@ -116,7 +115,15 @@ public class ConfigWindow extends JDialog {
      * <p>Apply the configuration to the config class</p>
      */
     private void applyConfiguration(){
+        if (autoAssign.isSelected()){
+            try {
+                BatchAutoAssignFormat();
+            } catch (BatchFormatException e) {
+                JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            }
+        }
         Config.setDeleteCSComments(deleteCSComments.isSelected());
+        Config.setAutoAssign(autoAssign.isSelected());
     }
 
     /**
@@ -125,5 +132,17 @@ public class ConfigWindow extends JDialog {
      */
     private void setDefaultConfiguration(){
         deleteCSComments.setSelected(Config.isDeleteCSComments());
+        autoAssign.setSelected(Config.isAutoAssign());
+        batchAutoAssignTextField.setEnabled(Config.isAutoAssign());
+        if (Config.isAutoAssign())batchAutoAssignTextField.setText(AutoAssign.getBatch());
+    }
+
+    private void BatchAutoAssignFormat() throws BatchFormatException {
+        String pattern = "^[1-9]\\d*$";
+        if(!Pattern.compile(pattern).matcher(batchAutoAssignTextField.getText()).matches() && !batchAutoAssignTextField.getText().equalsIgnoreCase("max")){
+            throw new BatchFormatException();
+        } else {
+            AutoAssign.setBatch(batchAutoAssignTextField.getText().trim().toLowerCase());
+        }
     }
 }
