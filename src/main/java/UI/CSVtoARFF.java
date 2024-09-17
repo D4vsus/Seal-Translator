@@ -2,7 +2,6 @@ package UI;
 
 import com.formdev.flatlaf.ui.FlatTextBorder;
 import exceptions.*;
-import logic.Attribute;
 import logic.DataTable;
 import logic.FileManager;
 
@@ -34,7 +33,6 @@ public class CSVtoARFF extends JFrame{
 
     //logic components
     private String fileName;
-    private final ArrayList<AttributeItem> dataAttributes;
     private final DataTable table;
 
     //UI components
@@ -55,7 +53,6 @@ public class CSVtoARFF extends JFrame{
      */
     public CSVtoARFF(){
         //initialize not graphical objects
-        this.dataAttributes = new ArrayList<>();
         this.table = new DataTable();
         this.fileName = "";
 
@@ -117,7 +114,7 @@ public class CSVtoARFF extends JFrame{
 
         this.exportARFFb.addActionListener(e->{
             try {
-                exportARFF(this.datasetName.getText(),this.dataAttributes);
+                exportARFF();
             } catch (Exception ex){
                 JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
@@ -149,16 +146,10 @@ public class CSVtoARFF extends JFrame{
      *
      * @param attributeItem : {@link AttributeItem}
      */
-    public void addAttribute(AttributeItem attributeItem) throws DuplicatedNameException {
+    public void addAttributeToPanel(AttributeItem attributeItem) throws DuplicatedNameException {
         //moves down the layout
         this.layout.gridy += 1;
-        for (AttributeItem comparer:this.dataAttributes) {
-            if (comparer.getAttributeName().equals(attributeItem.getAttributeName())) {
-                throw new DuplicatedNameException(attributeItem.getAttributeName());
-            }
-        }
         this.attribute.add(attributeItem.getPanel(),this.layout);
-        this.dataAttributes.add(attributeItem);
     }
 
     /**
@@ -173,15 +164,13 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>loadCSV()</h1>
      * <p>Load the data to the program</p>
-     *
-     * @param path : {@link String}
      */
     public void loadFile(String path){
         try{
             //Preprocess
             //reset the attribute panel
             this.layout.gridy = 0;
-            this.dataAttributes.clear();
+            this.table.clearAll();
             this.attribute.removeAll();
             this.scroll.revalidate();
             this.preprocess.revalidate();
@@ -189,10 +178,11 @@ public class CSVtoARFF extends JFrame{
 
             //Process
             //get the name of the file without the extension CSV
+            //String path = "";
             this.fileName = path.split("\\.")[0];
             FileManager.loadFile(table,path);
-            for (Attribute attribute : table.getAttributes()) {
-                addAttribute(new AttributeItem(attribute));
+            for (AttributeItem attribute : table.getAttributes()) {
+                addAttributeToPanel(attribute);
             }
 
             this.scroll.revalidate();
@@ -215,19 +205,12 @@ public class CSVtoARFF extends JFrame{
     /**
      * <h1>exportARFF()</h1>
      * <p>Create the arff file and write it's content</p>
-     *
-     * @param nameDataset : {@link String}
-     * @param dataTypes : {@link ArrayList}<{@link AttributeItem}>
      */
-    public void exportARFF(String nameDataset,ArrayList<AttributeItem> dataTypes) {
+    public void exportARFF() {
         try {
             if (datasetName.getText().isBlank()) throw new NoDatasetNameException();
             table.setRelation(datasetName.getText());
-            ArrayList<String> attributesType = new ArrayList<>();
-            for (AttributeItem dataType : dataAttributes){
-                attributesType.add(dataType.getAttributeTypeARFF());
-            }
-            table.loadARFFAttributes(attributesType.toArray(new String[0]));
+
             FileManager.exportARFF(table,fileName);
 
             datasetName.setBorder(new FlatTextBorder());
@@ -254,7 +237,7 @@ public class CSVtoARFF extends JFrame{
             evt.acceptDrop(DnDConstants.ACTION_COPY);
             List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             for (File file : droppedFiles) {
-                if (Arrays.stream(FileManager.SUPPORTEDFORMATS).toList().contains(file.getCanonicalPath().trim().toLowerCase().split("\\.")[1])) loadFile(file.getAbsolutePath());
+                if (Arrays.stream(FileManager.SUPPORTEDFORMATS).toList().contains(file.getCanonicalPath().trim().toLowerCase().split("\\.")[1])) loadFile(file.getCanonicalPath());
                 else {
                     throw new FileFormatNotRecognisedException();
                 }
@@ -287,7 +270,7 @@ public class CSVtoARFF extends JFrame{
         int returnVal = chooser.showOpenDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             this.fileName = chooser.getSelectedFile().getCanonicalPath();
-            if (!this.fileName.isBlank()) loadFile(this.fileName);
+            if (!this.fileName.isBlank()) loadFile(fileName);
         } else if (returnVal == JFileChooser.ERROR_OPTION) {
             throw new ImportException();
         }

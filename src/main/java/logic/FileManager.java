@@ -1,5 +1,6 @@
 package logic;
 
+import UI.AttributeItem;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -110,7 +111,7 @@ public class FileManager {
                 if (isFirstRow) {
                     isFirstRow = false;
                     for (String attributeName : record) {
-                        dataTable.addAttribute(new Attribute(attributeName));
+                        dataTable.addAttribute(new AttributeItem(attributeName.replace(' ','-')));
                     }
                     continue;
                 }
@@ -154,7 +155,7 @@ public class FileManager {
         //get the attributes
         if (iterator.hasNext()) {
             for (Cell attribute : iterator.next()) {
-                dataTable.addAttribute(new Attribute(attribute.getStringCellValue().replace(" ", "-")));
+                dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
             }
         }
 

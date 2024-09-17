@@ -1,12 +1,8 @@
 package UI;
 
 import logic.Attribute;
-import logic.DataTable;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * <h1>AttributeItem</h1>
  * <p>Manage attributes UI</p>
@@ -104,6 +100,10 @@ public class AttributeItem extends Attribute {
             }
         }
         return string.toString();
+    }
+
+    public String toARFF(){
+      return "@attribute " + this.getAttributeName() +" "+  getAttributeTypeARFF();
     }
 
     /**

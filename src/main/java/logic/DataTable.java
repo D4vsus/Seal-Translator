@@ -1,14 +1,13 @@
 package logic;
 
+import UI.AttributeItem;
 import exceptions.DuplicatedNameException;
 import exceptions.NotMatchSizeMetadata;
 import exceptions.NullRelation;
 import exceptions.TableOverflow;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * <h1>DataTable</h1>
@@ -21,7 +20,7 @@ public class DataTable {
     //variables and objects
     private String comments;
     private String relation;
-    private ArrayList<Attribute> metaData;
+    private ArrayList<AttributeItem> metaData;
     private final HashMap<Integer,ArrayList<String>> table;
 
     //methods
@@ -33,58 +32,58 @@ public class DataTable {
         setComments("");
         setRelation("");
         table=new HashMap<>();
-        setAttribute(new ArrayList<>());
+        setAttributeItem(new ArrayList<>());
     }
 
     /**
      * <h1>Constructor</h1>
-     * <p>Instantiate the class with attributes added</p>
+     * <p>Instantiate the class with AttributeItems added</p>
      *
-     * @param columns {@link ArrayList}<{@link Attribute}>
+     * @param columns {@link ArrayList}<{@link AttributeItem}>
      */
-    public DataTable(ArrayList<Attribute> columns){
+    public DataTable(ArrayList<AttributeItem> columns){
         setComments("");
         setRelation("");
         table=new HashMap<>();
-        setAttribute(columns);
+        setAttributeItem(columns);
     }
 
     /**
      * <h1>Constructor</h1>
-     * <p>Instantiate the class with attributes added</p>
+     * <p>Instantiate the class with AttributeItems added</p>
      *
-     * @param columns {@link Attribute[]}
+     * @param columns {@link AttributeItem[]}
      */
-    public DataTable(Attribute[] columns){
+    public DataTable(AttributeItem[] columns){
         setComments("");
         setRelation("");
         table=new HashMap<>();
-        setAttribute((ArrayList<Attribute>) Arrays.asList(columns));
+        setAttributeItem((ArrayList<AttributeItem>) Arrays.asList(columns));
     }
 
     /**
      * <h1>Constructor</h1>
-     * <p>Instantiate the class with attributes added</p>
+     * <p>Instantiate the class with AttributeItems added</p>
      *
-     * @param columns {@link Attribute[]}
+     * @param columns {@link AttributeItem[]}
      * @param relation {@link String}
      */
-    public DataTable(ArrayList<Attribute> columns,String relation){
+    public DataTable(ArrayList<AttributeItem> columns,String relation){
         setComments("");
         setRelation(relation);
         table=new HashMap<>();
-        setAttribute(columns);
+        setAttributeItem(columns);
     }
 
     public void setComments(String comments) {this.comments = comments;}
 
-    public void setAttribute(ArrayList<Attribute> columns){metaData = columns;}
+    public void setAttributeItem(ArrayList<AttributeItem> columns){metaData = columns;}
 
     public void setRelation(String relation){this.relation = relation;}
 
     public String getComments() {return comments;}
 
-    public Attribute getAttribute(int position){
+    public AttributeItem getAttributeItem(int position){
         return metaData.get(position);
     }
 
@@ -98,21 +97,39 @@ public class DataTable {
      * @throws NotMatchSizeMetadata
      */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
-        if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
+        if (record.length != metaData.size()) throw new NotMatchSizeMetadata(table.size()-1);
         table.put(table.size(),new ArrayList<>(Arrays.asList(record)));
     }
 
     /**
-     * <h1>addAttribute()</h1>
-     * <p>Add an attribute to the table</p>
+     * <h1>addAttributeItem()</h1>
+     * <p>Add an AttributeItem to the table</p>
      *
-     * @param attribute {@link Attribute}
+     * @param attribute {@link AttributeItem}
      * @throws DuplicatedNameException
      */
-    public void addAttribute(Attribute attribute) throws DuplicatedNameException {
-        if (metaData.contains(attribute))throw new DuplicatedNameException(attribute.attributeName);
+    public void addAttribute(AttributeItem attribute) throws DuplicatedNameException {
+        if (metaData.contains(attribute))throw new DuplicatedNameException(attribute.getAttributeName());
 
         metaData.add(attribute);
+    }
+
+    /**
+     * <h1>addAttributeItems()</h1>
+     * <p>Add all AttributeItems to the table</p>
+     *
+     * @param attribute {@link AttributeItem}
+     * @throws DuplicatedNameException
+     */
+    public void addAttributes(ArrayList<AttributeItem> attribute) throws DuplicatedNameException {
+        Set<AttributeItem> set = new HashSet<>();
+        for (AttributeItem item : attribute) {
+            if (!set.add(item)) {
+                throw new DuplicatedNameException(item.getAttributeName());
+            }
+        }
+
+        metaData = attribute;
     }
 
     /**
@@ -123,7 +140,7 @@ public class DataTable {
      * @throws NotMatchSizeMetadata
      */
     public void setRow(int row,String @NotNull [] record) throws NotMatchSizeMetadata{
-        if (record.length != metaData.size()) throw new NotMatchSizeMetadata();
+        if (record.length != metaData.size()) throw new NotMatchSizeMetadata(row);
 
         table.put(row,new ArrayList<>(Arrays.asList(record)));
     }
@@ -143,13 +160,13 @@ public class DataTable {
     }
 
     /**
-     * <h1>getAttributes()</h1>
-     * <p>Return the Attributes</p>
+     * <h1>getAttributeItems()</h1>
+     * <p>Return the AttributeItems</p>
      *
-     * @return {@link Attribute}
+     * @return {@link AttributeItem}
      */
-    public Attribute[] getAttributes() {
-        return metaData.toArray(new Attribute[0]);
+    public ArrayList<AttributeItem> getAttributes() {
+        return metaData;
     }
 
     /**
@@ -262,10 +279,10 @@ public class DataTable {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        for (Attribute Attribute: metaData){
-            string.append(Attribute.getAttributeName()).append(",");
+        for (AttributeItem attribute: metaData){
+            string.append(attribute.getAttributeARRF()).append(",");
         }
-        string.setCharAt(string.length()-1, '\n');
+        string.setCharAt(string.length() - 1, '\n');
         string.append(addData());
         string.deleteCharAt(string.length() - 1);
         return string.toString();
@@ -294,39 +311,13 @@ public class DataTable {
         StringBuilder string = new StringBuilder();
         if (!comments.isBlank())string.append(commentToArff()).append("\n");
 
-        string.append("@relation ").append(relation).append("\n");
-        for (Attribute attribute:metaData){
-            string.append(attribute.getAttributeARRF()).append('\n');
+        string.append("@relation ").append(relation).append("\n\n");
+        for (AttributeItem attribute:metaData){
+            string.append(attribute.toARFF()).append('\n');
         }
-        string.append("@data").append('\n');
+        string.append("\n").append("@data").append('\n');
         string.append(addData());
         return string.toString();
-    }
-
-    /**
-     * <h1>loadARFFAttributes()</h1>
-     * <p>Load the arff attributes</p>
-     *
-     * @param attributesType {@link String...}
-     * @throws NotMatchSizeMetadata
-     */
-    public void loadARFFAttributes(String...attributesType) throws NotMatchSizeMetadata {
-        if (attributesType.length != metaData.size()) throw  new NotMatchSizeMetadata();
-
-        for (int i = 0 ; i < attributesType.length;i++){
-            loadARFFAttribute(i,attributesType[i]);
-        }
-    }
-
-    /**
-     * <h1>loadARFFAttribute()</h1>
-     * <p>Load the ARFF file attributes</p>
-     *
-     * @param attributePosition int
-     * @param attributeType {@link String}
-     */
-    private void loadARFFAttribute(int attributePosition,String attributeType){
-        metaData.get(attributePosition).setAttributeType(attributeType);
     }
 
     public int size(){
