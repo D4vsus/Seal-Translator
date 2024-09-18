@@ -70,7 +70,6 @@ public class AutoAssign {
         int iteration = column.size();
         int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
         for (int i = 0;i < iteration && i < batch;i++) {
-            System.out.println(i);
             Matcher matcher = pattern.matcher(column.get(i));
             if (!matcher.matches()) {
                 return false;
