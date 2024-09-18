@@ -43,7 +43,7 @@ public class AutoAssign {
                     Set<String> set = new HashSet<>();
                     int iterate = dataTable.size();
                     int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
-                    for (int x = 0; x < iterate && i < batch; x++) {
+                    for (int x = 0; x < iterate && x < batch; x++) {
                         set.add(dataTable.getColumn(i).get(x));
                     }
                     dataTable.getAttributeItem(i).setAttributeTypeARFF("nominal", String.join(",", set));
@@ -70,6 +70,7 @@ public class AutoAssign {
         int iteration = column.size();
         int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
         for (int i = 0;i < iteration && i < batch;i++) {
+            System.out.println(i);
             Matcher matcher = pattern.matcher(column.get(i));
             if (!matcher.matches()) {
                 return false;
