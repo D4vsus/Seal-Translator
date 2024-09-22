@@ -380,4 +380,8 @@ public class DataTable {
     public int size(){
         return table.size();
     }
+
+    public int numberOfCells(){
+        return table.size() * metaData.size();
+    }
 }

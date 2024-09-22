@@ -6,6 +6,7 @@ import logic.AutoAssign;
 import logic.Config;
 import logic.DataTable;
 import logic.FileManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -148,7 +149,7 @@ public class CSVtoARFF extends JFrame{
      *
      * @param attributeItem : {@link AttributeItem}
      */
-    public void addAttributeToPanel(AttributeItem attributeItem) throws DuplicatedNameException {
+    public void addAttributeToPanel(AttributeItem attributeItem) {
         //moves down the layout
         this.layout.gridy += 1;
         this.attribute.add(attributeItem.getPanel(),this.layout);
@@ -168,7 +169,6 @@ public class CSVtoARFF extends JFrame{
      * <p>Load the data to the program</p>
      */
     public void loadFile(String path){
-        try{
             //Preprocess
             //reset the attribute panel
             this.layout.gridy = 0;
@@ -180,32 +180,41 @@ public class CSVtoARFF extends JFrame{
 
             //Process
             //get the name of the file without the extension CSV
-            //String path = "";
             this.fileName = path.split("\\.")[0];
-            FileManager.loadFile(table,path);
-            for (AttributeItem attribute : table.getAttributes()) {
-                addAttributeToPanel(attribute);
-            }
 
-            if (Config.isAutoAssign()) {
-                AutoAssign.autoAssignAttributes(table);
-            }
+            loadFileInTheBackGround(path).execute();
 
             this.scroll.revalidate();
+    }
 
-        } catch (DuplicatedNameException e) {
-            JOptionPane.showMessageDialog(this,e.toString(),"Duplicated Name",JOptionPane.ERROR_MESSAGE,null);
-            table.clearAll();
-            this.exportARFFb.setEnabled(false);
-        }  catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this,"The file didn't exist or didn't found","File not found",JOptionPane.ERROR_MESSAGE,null);
-            table.clearAll();
-            this.exportARFFb.setEnabled(false);
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
-            table.clearAll();
-            this.exportARFFb.setEnabled(false);
-        }
+    private @NotNull SwingWorker<Void, Void> loadFileInTheBackGround(String path) {
+        //initialize the loading screen
+        LoadingScreen loadingScreen = new LoadingScreen();
+
+        return new SwingWorker<>() {
+            //set the work in the background
+            @Override
+            protected Void doInBackground() throws Exception {
+                try{
+                FileManager.loadFile(table, path);
+                for (AttributeItem attribute : table.getAttributes()) {
+                    addAttributeToPanel(attribute);
+                }
+                } catch (Exception e){
+                    JOptionPane.showMessageDialog(null,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+                    table.clearAll();
+                    exportARFFb.setEnabled(false);
+                }
+                if (Config.isAutoAssign()) AutoAssign.autoAssignAttributes(table).execute();
+                return null;
+            }
+
+            //when they finish, delete the window
+            @Override
+            protected void done() {
+                loadingScreen.dispose();
+            }
+        };
     }
 
     /**

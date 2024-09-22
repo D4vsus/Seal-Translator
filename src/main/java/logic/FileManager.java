@@ -1,6 +1,7 @@
 package logic;
 
 import UI.AttributeItem;
+import UI.LoadingScreen;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -19,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook; // For .xlsx files
 import org.apache.poi.hssf.usermodel.HSSFWorkbook; // For .xls files
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -85,7 +87,7 @@ public class FileManager {
      * @param path      : {@link String}
      * @author D4vsus
      */
-    public static void loadCSV(DataTable dataTable, String path) throws IOException, DuplicatedNameException, NotMatchSizeMetadata {
+    public static void loadCSV(DataTable dataTable, String path) throws IOException, DuplicatedNameException, NotMatchSizeMetadata, CsvException {
 
         BufferedReader preprocess = new BufferedReader(new FileReader(path));
         StringBuilder content = new StringBuilder();
@@ -119,9 +121,8 @@ public class FileManager {
                 }
                 dataTable.addRow(record);
             }
-
-        } catch (IOException | CsvException e) {
-           throw new IOException();
+        } catch (IOException | DuplicatedNameException | NotMatchSizeMetadata | CsvException e){
+            throw e;
         }
     }
 
@@ -138,56 +139,77 @@ public class FileManager {
      * @throws FileFormatNotRecognisedException
      */
     public static void loadXLSAndXSLX(DataTable dataTable, String path) throws IOException, NullPointerException, NotMatchSizeMetadata, DuplicatedNameException, FileFormatNotRecognisedException {
-        //open the file
-        FileInputStream fis = new FileInputStream(path);
-        Workbook workbook;
+        //set up the loading bar
+        Workbook workbook = null;
+        try (FileInputStream fis = new FileInputStream(path)){
+                //open the file
 
-        //see if it's a xls or a xlsx
-        if (path.endsWith("xls")) workbook = new HSSFWorkbook(fis);
-        else if (path.endsWith("xlsx")) workbook = new XSSFWorkbook(fis);
-        else throw new FileFormatNotRecognisedException();
+                //see if it's a xls or a xlsx
+                if (path.endsWith("xls")) workbook = new HSSFWorkbook(fis);
+                else if (path.endsWith("xlsx")) workbook = new XSSFWorkbook(fis);
+                else throw new FileFormatNotRecognisedException();
 
-        // Get the first sheet
-        Sheet sheet = Objects.requireNonNull(workbook).getSheetAt(0);
+                // Get the first sheet
+                Sheet sheet = Objects.requireNonNull(workbook).getSheetAt(0);
 
 
-        //initialize the iterator
-        Iterator<Row> iterator = sheet.rowIterator();
+                //initialize the iterator
+                Iterator<Row> iterator = sheet.rowIterator();
 
-        //get the attributes
-        if (iterator.hasNext()) {
-            if (Config.isDeleteCSComments()){
-                boolean endComment = false;
-                do{
-                    Row row = iterator.next();
-                    if (!row.getCell(0).getStringCellValue().startsWith("#")){
-                        endComment = true;
+                //get the attributes
+                if (iterator.hasNext()) {
+                    if (Config.isDeleteCSComments()) {
+                        boolean endComment = false;
+                        do {
+                            Row row = iterator.next();
+                            if (!row.getCell(0).getStringCellValue().startsWith("#")) {
+                                endComment = true;
+                                for (Cell attribute : row) {
+                                    dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
+                                }
+                            }
+                        } while (iterator.hasNext() && !endComment);
+                    } else {
                         for (Cell attribute : iterator.next()) {
                             dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
                         }
                     }
-                } while (iterator.hasNext() && !endComment);
-            } else {
-                for (Cell attribute : iterator.next()) {
-                    dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
+                }
+
+                //get the data
+                Row row;
+                while (iterator.hasNext()) {
+                    row = iterator.next();
+                    String[] data = new String[row.getLastCellNum()];
+                    for (Cell cell : row) {
+                        // Process each cell based on its type
+                        switch (cell.getCellType()) {
+                            case STRING:
+                                data[cell.getColumnIndex()] = cell.getStringCellValue();
+                                break;
+                            case NUMERIC:
+                                data[cell.getColumnIndex()] = ""+cell.getNumericCellValue();
+                                break;
+                            case BOOLEAN:
+                                data[cell.getColumnIndex()] = "" + cell.getBooleanCellValue();
+                                break;
+                            default:
+
+                        }
+                    }
+                    dataTable.addRow(data);
+                }
+
+        }  catch (IOException|NullPointerException|NotMatchSizeMetadata|DuplicatedNameException|FileFormatNotRecognisedException e){
+            throw e;
+        }
+        finally {
+                // Close resources
+                if (workbook != null) {
+                    workbook.close();
                 }
             }
-        }
 
-        //get the data
-        Row row;
-        while (iterator.hasNext()){
-            row = iterator.next();
-            String[] data = new String[row.getLastCellNum()];
-            for (Cell cell : row) {
-                data[cell.getColumnIndex()] = cell.getStringCellValue();
-            }
-            dataTable.addRow(data);
-        }
-
-        // Close resources
-        workbook.close();
-        fis.close();
     }
 
     /**
@@ -201,7 +223,7 @@ public class FileManager {
      * @throws IOException
      * @throws FileFormatNotRecognisedException
      */
-    public static void loadFile(DataTable dataTable, @NotNull String path) throws DuplicatedNameException, NotMatchSizeMetadata, IOException, FileFormatNotRecognisedException {
+    public static void loadFile(DataTable dataTable, @NotNull String path) throws DuplicatedNameException, NotMatchSizeMetadata, IOException, FileFormatNotRecognisedException, CsvException {
         //clear all the table
         dataTable.clearAll();
 

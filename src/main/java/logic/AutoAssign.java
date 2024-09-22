@@ -1,8 +1,11 @@
 package logic;
 
+import UI.LoadingScreen;
 import exceptions.ArffAttributeNotRecognised;
 import exceptions.TableOverflow;
+import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,37 +31,56 @@ public class AutoAssign {
      * @param dataTable {@link DataTable}
      * @throws TableOverflow
      */
-    public static void autoAssignAttributes(DataTable dataTable) throws TableOverflow {
-        try {
-            // Iterate over the map
-            int iteration = dataTable.getAttributes().size();
-            for (int i = 0; i < iteration; i++) {
-                HashMap<Integer, String> column = dataTable.getColumn(i);
-                if (isNumber(column)) {
-                    dataTable.getAttributeItem(i).setAttributeTypeARFF("numeric");
-                } else if (isString(column)) {
-                    dataTable.getAttributeItem(i).setAttributeTypeARFF("string");
-                } else if (isDate(column)) {
-                    dataTable.getAttributeItem(i).setAttributeTypeARFF("date", "dd-mm-yyyy");
-                } else {
-                    // Create a set to save all the posibles types of nominal data
-                    Set<String> set = new HashSet<>();
+    public static @NotNull SwingWorker<Void, Void> autoAssignAttributes(DataTable dataTable) {
+        //initialize the loading screen
+        LoadingScreen loadingScreen = new LoadingScreen(dataTable.numberOfCells());
 
-                    // See the number of iterations
-                    int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
+        return new SwingWorker<>() {
+            //set the work in the background
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    // Iterate over the map
+                    int iteration = dataTable.getAttributes().size();
+                    for (int i = 0; i < iteration; i++) {
+                        HashMap<Integer, String> column = dataTable.getColumn(i);
+                        if (isNumber(column)) {
+                            dataTable.getAttributeItem(i).setAttributeTypeARFF("numeric");
+                        } else if (isString(column)) {
+                            dataTable.getAttributeItem(i).setAttributeTypeARFF("string");
+                        } else if (isDate(column)) {
+                            dataTable.getAttributeItem(i).setAttributeTypeARFF("date", "dd-mm-yyyy");
+                        } else {
+                            // Create a set to save all the posibles types of nominal data
+                            Set<String> set = new HashSet<>();
 
-                    // Iterate over the column to see if matches with the pattern
-                    HashMap<Integer, String> nominalColumn = dataTable.getColumn(i);
-                    for (int x = 0; x < batch; x++) {
-                        String possibleNewValue = nominalColumn.get(x);
-                        if (!possibleNewValue.equals("?")) {
-                            set.add(nominalColumn.get(x).replace(" ", "-"));
+                            // See the number of iterations
+                            int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
+
+                            // Iterate over the column to see if matches with the pattern
+                            HashMap<Integer, String> nominalColumn = dataTable.getColumn(i);
+                            for (int x = 0; x < batch; x++) {
+                                String possibleNewValue = nominalColumn.get(x);
+                                if (!possibleNewValue.equals("?") && !possibleNewValue.isBlank()) {
+                                    set.add(nominalColumn.get(x).replace(" ", "-"));
+                                }
+                            }
+                            dataTable.getAttributeItem(i).setAttributeTypeARFF("nominal", String.join(",", set));
                         }
+                        loadingScreen.update();
                     }
-                    dataTable.getAttributeItem(i).setAttributeTypeARFF("nominal", String.join(",", set));
+                } catch (ArffAttributeNotRecognised ignore){
+                    loadingScreen.dispose();
                 }
+                return null;
             }
-        } catch (ArffAttributeNotRecognised ignore){}
+
+            //when they finish, delete the window
+            @Override
+            protected void done() {
+                loadingScreen.dispose();
+            }
+        };
     }
 
     /**
@@ -121,7 +143,7 @@ public class AutoAssign {
      * @return boolean
      */
     private static boolean isDate(HashMap<Integer,String> column){
-        String datePattern = "^(0[1-9]|[12][0-9]|3[01])[/-](0[1-9]|1[0-2])[/-](\\d{2,4})$";
+        String datePattern = "^(0[1-9]|[12][0-9]|3[01])[/-](0[1-9]|1[0-2])[/-](\\d{2,4})$|^(\\d{4})[/-](0[1-9]|1[0-2])[/-](0[1-9]|[12][0-9]|3[01])$";
 
         // Compile the regular expression
         Pattern pattern = Pattern.compile(datePattern);
