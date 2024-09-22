@@ -381,6 +381,12 @@ public class DataTable {
         return table.size();
     }
 
+    /**
+     * <h1>numberOfCells()</h1>
+     * <p>Get the number of cells of the table</p>
+     *
+     * @return int
+     */
     public int numberOfCells(){
         return table.size() * metaData.size();
     }

@@ -117,7 +117,7 @@ public class CSVtoARFF extends JFrame{
 
         this.exportARFFb.addActionListener(e->{
             try {
-                exportARFF();
+                exportARFFBackGround().execute();
             } catch (Exception ex){
                 JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
@@ -187,6 +187,12 @@ public class CSVtoARFF extends JFrame{
             this.scroll.revalidate();
     }
 
+    /**
+     * <h1>loadFileInTheBackGround()</h1>
+     * <p>Import the file independently from the gui</p>
+     *
+     * @return {@link SwingWorker}
+     */
     private @NotNull SwingWorker<Void, Void> loadFileInTheBackGround(String path) {
         //initialize the loading screen
         LoadingScreen loadingScreen = new LoadingScreen();
@@ -239,6 +245,31 @@ public class CSVtoARFF extends JFrame{
         } catch (Exception e){
             JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
+    }
+
+    /**
+     * <h1>exportARFFBackGround()</h1>
+     * <p>Export the file independently from the gui</p>
+     *
+     * @return {@link SwingWorker}
+     */
+    private @NotNull SwingWorker<Void, Void> exportARFFBackGround() {
+
+        return new SwingWorker<>() {
+            //set the work in the background
+            @Override
+            protected Void doInBackground() throws Exception {
+                try{
+                    exportARFF();
+                } catch (Exception e){
+                    JOptionPane.showMessageDialog(null,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+                    table.clearAll();
+                    exportARFFb.setEnabled(false);
+                }
+                if (Config.isAutoAssign()) AutoAssign.autoAssignAttributes(table).execute();
+                return null;
+            }
+        };
     }
 
     /**

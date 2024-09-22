@@ -3,7 +3,6 @@ package UI;
 import exceptions.BatchFormatException;
 import logic.AutoAssign;
 import logic.Config;
-import logic.FileManager;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -143,13 +142,22 @@ public class ConfigWindow extends JDialog {
      */
     private void setDefaultConfiguration(){
         deleteCSComments.setSelected(Config.isDeleteCSComments());
+
         autoAssign.setSelected(Config.isAutoAssign());
         batchAutoAssignTextField.setEnabled(Config.isAutoAssign());
         if (Config.isAutoAssign())batchAutoAssignTextField.setText(AutoAssign.getBatch());
+
+        nullStringText.setEnabled(Config.isNullString());
         nullString.setSelected(Config.isNullString());
         if (Config.isNullString())nullStringText.setText(Config.getNullString());
     }
 
+    /**
+     * <h1>BatchAutoAssignFormat()</h1>
+     * <p>See if the batch is writen correctly</p>
+     *
+     * @throws BatchFormatException
+     */
     private void BatchAutoAssignFormat() throws BatchFormatException {
         String pattern = "^[1-9]\\d*$";
         if(!Pattern.compile(pattern).matcher(batchAutoAssignTextField.getText()).matches() && !batchAutoAssignTextField.getText().equalsIgnoreCase("max")){

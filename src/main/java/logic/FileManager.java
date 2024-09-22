@@ -20,7 +20,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook; // For .xlsx files
 import org.apache.poi.hssf.usermodel.HSSFWorkbook; // For .xls files
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
