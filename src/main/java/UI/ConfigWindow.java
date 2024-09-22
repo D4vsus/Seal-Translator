@@ -3,6 +3,7 @@ package UI;
 import exceptions.BatchFormatException;
 import logic.AutoAssign;
 import logic.Config;
+import logic.FileManager;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -27,8 +28,9 @@ public class ConfigWindow extends JDialog {
     private JPanel optionPanel;
     private JRadioButton deleteCSComments;
     private JRadioButton autoAssign;
-    private JLabel batchLabel;
     private JTextField batchAutoAssignTextField;
+    private JRadioButton nullString;
+    private JTextField nullStringText;
 
     //methods
     /**
@@ -57,6 +59,11 @@ public class ConfigWindow extends JDialog {
         autoAssign.addActionListener(e-> {
             batchAutoAssignTextField.setEnabled(autoAssign.isSelected());
             batchAutoAssignTextField.setText("max");
+        });
+
+        nullString.addActionListener(e-> {
+            nullStringText.setEnabled(nullString.isSelected());
+            nullStringText.setText("?");
         });
 
         // call onCancel() when cross is clicked
@@ -122,6 +129,10 @@ public class ConfigWindow extends JDialog {
                 JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
         }
+        Config.setNullString(nullString.isSelected());
+        if (Config.isNullString()) {
+            Config.setNullString(nullStringText.getText());
+        }
         Config.setDeleteCSComments(deleteCSComments.isSelected());
         Config.setAutoAssign(autoAssign.isSelected());
     }
@@ -135,6 +146,8 @@ public class ConfigWindow extends JDialog {
         autoAssign.setSelected(Config.isAutoAssign());
         batchAutoAssignTextField.setEnabled(Config.isAutoAssign());
         if (Config.isAutoAssign())batchAutoAssignTextField.setText(AutoAssign.getBatch());
+        nullString.setSelected(Config.isNullString());
+        if (Config.isNullString())nullStringText.setText(Config.getNullString());
     }
 
     private void BatchAutoAssignFormat() throws BatchFormatException {

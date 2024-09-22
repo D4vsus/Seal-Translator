@@ -17,6 +17,7 @@ public class AttributeItem extends Attribute {
     private JComboBox attributeTypeButton;
     private JLabel attributeLabel;
     private JTextField dataInfoText;
+    private JCheckBox drop;
 
     //methods
     /**
@@ -160,4 +161,8 @@ public class AttributeItem extends Attribute {
      * @return boolean
      */
     private boolean isSelectedNominalDate(){return this.attributeTypeButton.getSelectedIndex() == 4|| this.attributeTypeButton.getSelectedIndex() == 3;}
+
+    public boolean isDropColumn(){
+        return drop.isSelected();
+    }
 }

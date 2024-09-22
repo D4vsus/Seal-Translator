@@ -156,8 +156,21 @@ public class FileManager {
 
         //get the attributes
         if (iterator.hasNext()) {
-            for (Cell attribute : iterator.next()) {
-                dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
+            if (Config.isDeleteCSComments()){
+                boolean endComment = false;
+                do{
+                    Row row = iterator.next();
+                    if (!row.getCell(0).getStringCellValue().startsWith("#")){
+                        endComment = true;
+                        for (Cell attribute : iterator.next()) {
+                            dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
+                        }
+                    }
+                } while (iterator.hasNext() && !endComment);
+            } else {
+                for (Cell attribute : iterator.next()) {
+                    dataTable.addAttribute(new AttributeItem(attribute.getStringCellValue().replace(" ", "-")));
+                }
             }
         }
 
@@ -167,20 +180,7 @@ public class FileManager {
             row = iterator.next();
             String[] data = new String[row.getLastCellNum()];
             for (Cell cell : row) {
-                // Process each cell based on its type
-                switch (cell.getCellType()) {
-                    case STRING:
-                        data[cell.getColumnIndex()] = cell.getStringCellValue();
-                        break;
-                    case NUMERIC:
-                        data[cell.getColumnIndex()] = ""+cell.getNumericCellValue();
-                        break;
-                    case BOOLEAN:
-                        data[cell.getColumnIndex()] = "" + cell.getBooleanCellValue();
-                        break;
-                    default:
-
-                }
+                data[cell.getColumnIndex()] = cell.getStringCellValue();
             }
             dataTable.addRow(data);
         }
@@ -211,5 +211,4 @@ public class FileManager {
         if (path.trim().toLowerCase().endsWith(".csv")) loadCSV(dataTable,path);
         if (path.trim().toLowerCase().endsWith(".xls") || path.trim().toLowerCase().endsWith(".xlsx")) loadXLSAndXSLX(dataTable,path);
     }
-
 }

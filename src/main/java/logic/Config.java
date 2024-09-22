@@ -11,6 +11,9 @@ public class Config {
     //variables and objects
     private static boolean deleteCSComments = true;
     private static boolean autoAssign = false;
+    private static boolean nullString = false;
+    private static String nullStringText = "";
+
 
     //methods
     public static boolean isDeleteCSComments() {
@@ -22,4 +25,9 @@ public class Config {
 
     public static boolean isAutoAssign() {return autoAssign;}
     public static void setAutoAssign(boolean autoAssign) {Config.autoAssign = autoAssign;}
+
+    public static boolean isNullString() {return nullString;}
+    public static void setNullString(boolean nullString) {Config.nullString = nullString;}
+    public static String getNullString() {return nullStringText;}
+    public static void setNullString(String nullString) {Config.nullStringText = nullString;}
 }

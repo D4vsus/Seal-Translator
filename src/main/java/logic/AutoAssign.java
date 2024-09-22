@@ -30,6 +30,7 @@ public class AutoAssign {
      */
     public static void autoAssignAttributes(DataTable dataTable) throws TableOverflow {
         try {
+            // Iterate over the map
             int iteration = dataTable.getAttributes().size();
             for (int i = 0; i < iteration; i++) {
                 HashMap<Integer, String> column = dataTable.getColumn(i);
@@ -40,18 +41,24 @@ public class AutoAssign {
                 } else if (isDate(column)) {
                     dataTable.getAttributeItem(i).setAttributeTypeARFF("date", "dd-mm-yyyy");
                 } else {
+                    // Create a set to save all the posibles types of nominal data
                     Set<String> set = new HashSet<>();
-                    int iterate = dataTable.size();
-                    int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
-                    for (int x = 0; x < iterate && x < batch; x++) {
-                        set.add(dataTable.getColumn(i).get(x));
+
+                    // See the number of iterations
+                    int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
+
+                    // Iterate over the column to see if matches with the pattern
+                    HashMap<Integer, String> nominalColumn = dataTable.getColumn(i);
+                    for (int x = 0; x < batch; x++) {
+                        String possibleNewValue = nominalColumn.get(x);
+                        if (!possibleNewValue.equals("?")) {
+                            set.add(nominalColumn.get(x).replace(" ", "-"));
+                        }
                     }
                     dataTable.getAttributeItem(i).setAttributeTypeARFF("nominal", String.join(",", set));
                 }
             }
-        } catch (ArffAttributeNotRecognised ignore){
-
-        }
+        } catch (ArffAttributeNotRecognised ignore){}
     }
 
     /**
@@ -67,9 +74,11 @@ public class AutoAssign {
         // Compile the regular expression
         Pattern pattern = Pattern.compile(realNumberPattern);
 
-        int iteration = column.size();
-        int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
-        for (int i = 0;i < iteration && i < batch;i++) {
+        // See the number of iterations
+        int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
+
+        // Iterate over the column to see if matches with the pattern
+        for (int i = 0;i < batch;i++) {
             Matcher matcher = pattern.matcher(column.get(i));
             if (!matcher.matches()) {
                 return false;
@@ -91,9 +100,11 @@ public class AutoAssign {
         // Compile the regular expression
         Pattern pattern = Pattern.compile(realNumberPattern);
 
-        int iteration = column.size();
-        int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
-        for (int i = 0;i < iteration && i < batch;i++) {
+        // See the number of iterations
+        int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
+
+        // Iterate over the column to see if matches with the pattern
+        for (int i = 0;i < batch;i++) {
             Matcher matcher = pattern.matcher(column.get(i));
             if (!matcher.matches()) {
                 return false;
@@ -115,9 +126,11 @@ public class AutoAssign {
         // Compile the regular expression
         Pattern pattern = Pattern.compile(datePattern);
 
-        int iteration = column.size();
-        int batch = (AutoAssign.batch.equals("max"))?iteration:Integer.parseInt(AutoAssign.batch);
-        for (int i = 0; i < iteration && i < batch; i++) {
+        // See the number of iterations
+        int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
+
+        // Iterate over the column to see if matches with the pattern
+        for (int i = 0;i < batch; i++) {
             Matcher matcher = pattern.matcher(column.get(i));
             if (!matcher.matches()) {
                 return false;
