@@ -60,7 +60,7 @@ public class CSVtoARFF extends JFrame{
         this.fileName = "";
 
         //set the properties of the window
-        this.setBounds(100,100,500,250);
+        this.setBounds(100,100,750,300);
         this.setTitle("Seal Translator");
         this.add(mainWindow);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -82,6 +82,17 @@ public class CSVtoARFF extends JFrame{
         credits.addActionListener(e->new Credits());
         credits.setToolTipText("Credits (Alt + C)");
         menu.add(credits);
+
+        JMenuItem visualize = new JMenuItem("Visualize",'v');
+        visualize.addActionListener(e-> {
+            try {
+                new Visualizer(table,this);
+            } catch (TableOverflow ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        visualize.setToolTipText("Add Comment (Alt + V)");
+        menu.add(visualize);
 
         JMenuItem addComment = new JMenuItem("Add Comment",'a');
         addComment.addActionListener(e->openComment());

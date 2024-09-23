@@ -1,5 +1,9 @@
+import UI.AttributeItem;
 import UI.CSVtoARFF;
+import UI.Visualizer;
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import logic.DataTable;
+import logic.FileManager;
 
 import javax.swing.*;
 
