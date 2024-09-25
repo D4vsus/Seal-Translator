@@ -101,7 +101,7 @@ public class CSVtoARFF extends JFrame{
 
         JMenuItem configuration = new JMenuItem("Configuration",'c');
         configuration.addActionListener(e->new ConfigWindow());
-        configuration.setToolTipText("configuration (Ctrl + A)");
+        configuration.setToolTipText("Configuration (Ctrl + C)");
         menu.add(configuration);
 
         this.setJMenuBar(menu);
@@ -115,7 +115,14 @@ public class CSVtoARFF extends JFrame{
         //add menu shortcuts
         this.mainWindow.registerKeyboardAction(e -> new Credits(),      KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         this.mainWindow.registerKeyboardAction(e -> openComment(),      KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        this.mainWindow.registerKeyboardAction(e -> new ConfigWindow(), KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        this.mainWindow.registerKeyboardAction(e -> new ConfigWindow(), KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        this.mainWindow.registerKeyboardAction(e -> {
+            try {
+                new Visualizer(table,this);
+            } catch (TableOverflow ex) {
+                throw new RuntimeException(ex);
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         //add listeners
         this.importCSVb.addActionListener(e->{

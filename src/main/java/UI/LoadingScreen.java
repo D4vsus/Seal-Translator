@@ -58,15 +58,6 @@ public class LoadingScreen extends JFrame implements Runnable{
         progressBar.setValue(value);
     }
 
-    public static void main(String[] args) {
-        // Run the loading screen
-        LoadingScreen loadingScreen = new LoadingScreen(100);
-        new Thread(loadingScreen).start();
-        //LoadingScreen loadingScreen1 = new LoadingScreen();
-        //new Thread(loadingScreen1).start();
-        //loadingScreen1.dispose();
-    }
-
     @Override
     public void run() {
         while (progressBar.getMaximum() > progressBar.getValue()) {

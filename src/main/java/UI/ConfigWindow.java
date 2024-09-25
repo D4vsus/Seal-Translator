@@ -39,7 +39,7 @@ public class ConfigWindow extends JDialog {
     public ConfigWindow() {
 
         //Set up the window
-        setContentPane(content);
+        setMainPanel();
         setBounds(100,100,500,250);
         setTitle("Configuration");
         setModal(true);
@@ -47,7 +47,96 @@ public class ConfigWindow extends JDialog {
 
         //Logic Code
         setDefaultConfiguration();
+        addListeners();
 
+        // call onCancel() on ESCAPE
+        content.registerKeyboardAction(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                onCancel();
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        // call onApply on A
+        content.registerKeyboardAction(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                onApply();
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        setVisible(true);
+    }
+
+    protected void setMainPanel() {
+        setContentPane(content);
+    }
+
+    /**
+     * <h1>onApply()</h1>
+     * <p>Apply the configuration when click apply</p>
+     */
+    protected void onApply(){
+        applyConfiguration();
+    }
+
+    /**
+     * <h1>onOk()</h1>
+     * <p>Apply the configuration when click ok</p>
+     */
+    protected void onOK() {
+        applyConfiguration();
+        dispose();
+    }
+
+    /**
+     * <h1>onCancel()</h1>
+     * <p>Apply the configuration when click Cancel</p>
+     */
+    protected void onCancel() {
+        // add your code here if necessary
+        dispose();
+    }
+
+    /**
+     * <h1>applyConfiguration()</h1>
+     * <p>Apply the configuration to the config class</p>
+     */
+    protected void applyConfiguration(){
+        if (autoAssign.isSelected()){
+            try {
+                BatchAutoAssignFormat();
+            } catch (BatchFormatException e) {
+                JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            }
+        }
+        Config.setNullString(nullString.isSelected());
+        if (Config.isNullString()) {
+            Config.setNullString(nullStringText.getText());
+        }
+        Config.setDeleteCSComments(deleteCSComments.isSelected());
+        Config.setAutoAssign(autoAssign.isSelected());
+    }
+
+    /**
+     * <h1>setDefaultConfiguration()</h1>
+     * <p>Get the configuration from Config class</p>
+     */
+    protected void setDefaultConfiguration(){
+        deleteCSComments.setSelected(Config.isDeleteCSComments());
+
+        autoAssign.setSelected(Config.isAutoAssign());
+        batchAutoAssignTextField.setEnabled(Config.isAutoAssign());
+        if (Config.isAutoAssign())batchAutoAssignTextField.setText(AutoAssign.getBatch());
+
+        nullStringText.setEnabled(Config.isNullString());
+        nullString.setSelected(Config.isNullString());
+        if (Config.isNullString())nullStringText.setText(Config.getNullString());
+    }
+
+    /**
+     * <h1>addListeners()</h1>
+     * <p>Add all the listeners</p>
+     */
+    protected void addListeners(){
         //Listeners
         buttonOK.addActionListener(e -> onOK());
 
@@ -72,84 +161,6 @@ public class ConfigWindow extends JDialog {
                 onCancel();
             }
         });
-
-        // call onCancel() on ESCAPE
-        content.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-        // call onApply on A
-        content.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onApply();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-        setVisible(true);
-    }
-
-    /**
-     * <h1>onApply()</h1>
-     * <p>Apply the configuration when click apply</p>
-     */
-    private void onApply(){
-        applyConfiguration();
-    }
-
-    /**
-     * <h1>onOk()</h1>
-     * <p>Apply the configuration when click ok</p>
-     */
-    private void onOK() {
-        applyConfiguration();
-        dispose();
-    }
-
-    /**
-     * <h1>onCancel()</h1>
-     * <p>Apply the configuration when click Cancel</p>
-     */
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
-    }
-
-    /**
-     * <h1>applyConfiguration()</h1>
-     * <p>Apply the configuration to the config class</p>
-     */
-    private void applyConfiguration(){
-        if (autoAssign.isSelected()){
-            try {
-                BatchAutoAssignFormat();
-            } catch (BatchFormatException e) {
-                JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
-            }
-        }
-        Config.setNullString(nullString.isSelected());
-        if (Config.isNullString()) {
-            Config.setNullString(nullStringText.getText());
-        }
-        Config.setDeleteCSComments(deleteCSComments.isSelected());
-        Config.setAutoAssign(autoAssign.isSelected());
-    }
-
-    /**
-     * <h1>setDefaultConfiguration()</h1>
-     * <p>Get the configuration from Config class</p>
-     */
-    private void setDefaultConfiguration(){
-        deleteCSComments.setSelected(Config.isDeleteCSComments());
-
-        autoAssign.setSelected(Config.isAutoAssign());
-        batchAutoAssignTextField.setEnabled(Config.isAutoAssign());
-        if (Config.isAutoAssign())batchAutoAssignTextField.setText(AutoAssign.getBatch());
-
-        nullStringText.setEnabled(Config.isNullString());
-        nullString.setSelected(Config.isNullString());
-        if (Config.isNullString())nullStringText.setText(Config.getNullString());
     }
 
     /**

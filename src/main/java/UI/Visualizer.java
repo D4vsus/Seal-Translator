@@ -1,6 +1,7 @@
 package UI;
 
 import exceptions.TableOverflow;
+import logic.Config;
 import logic.DataTable;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +33,6 @@ public class Visualizer extends JFrame{
     private JLabel numTableView;
 
     private final DataTable table;
-    private int rowsToVisualize;
     private int rowsCursor;
     private DefaultTableModel tableModel;
     private int size;
@@ -51,7 +51,6 @@ public class Visualizer extends JFrame{
 
         this.table = table;
         size = table.size();
-        rowsToVisualize = 20;
         rowsCursor = 0;
 
         //set the properties of the window
@@ -68,6 +67,16 @@ public class Visualizer extends JFrame{
         getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
 
         loadTable();
+
+        //menu
+        JMenuBar menu = new JMenuBar();
+
+        JMenuItem credits = new JMenuItem("Configuration",'c');
+        credits.addActionListener(e->new ConfigVisualizeWindow());
+        credits.setToolTipText("Configuration View (Alt + C)");
+        menu.add(credits);
+
+        setJMenuBar(menu);
 
         //listeners
         nextView.addActionListener(e-> {
@@ -124,7 +133,7 @@ public class Visualizer extends JFrame{
      * @throws TableOverflow
      */
     private void nextTable() throws TableOverflow {
-        if (((rowsCursor + 1) * rowsToVisualize) < size) {
+        if (((rowsCursor + 1) * Config.getRowsToVisualize()) < size) {
             rowsCursor++;
             loadTable();
         }
@@ -164,15 +173,15 @@ public class Visualizer extends JFrame{
         }
 
         //load the data
-        for (int x = rowsCursor*rowsToVisualize;x < rowsToVisualize+(rowsCursor*rowsToVisualize) && x < size;x++){
+        for (int x = rowsCursor*Config.getRowsToVisualize();x < Config.getRowsToVisualize()+(rowsCursor*Config.getRowsToVisualize()) && x < size;x++){
             tableModel.addRow(table.getRow(x));
         }
 
-        numTableView.setText((rowsCursor+1)+"/"+(size/rowsToVisualize + ((size%rowsToVisualize > 0)?1:0)));
+        numTableView.setText((rowsCursor+1)+"/"+(size/Config.getRowsToVisualize() + ((size%Config.getRowsToVisualize() > 0)?1:0)));
 
         tableView.setModel(tableModel);
 
-        nextView.setEnabled(((rowsCursor + 1) * rowsToVisualize) < size);
+        nextView.setEnabled(((rowsCursor + 1) * Config.getRowsToVisualize()) < size);
         previousView.setEnabled(rowsCursor > 0);
     }
 }

@@ -13,6 +13,7 @@ public class Config {
     private static boolean autoAssign = false;
     private static boolean nullString = false;
     private static String nullStringText = "";
+    private static int rowsToVisualize = 20;
 
 
     //methods
@@ -30,4 +31,7 @@ public class Config {
     public static void setNullString(boolean nullString) {Config.nullString = nullString;}
     public static String getNullString() {return nullStringText;}
     public static void setNullString(String nullString) {Config.nullStringText = nullString;}
+
+    public static int getRowsToVisualize() {return rowsToVisualize;}
+    public static void setRowsToVisualize(int rowsToVisualize) {Config.rowsToVisualize = rowsToVisualize;}
 }
