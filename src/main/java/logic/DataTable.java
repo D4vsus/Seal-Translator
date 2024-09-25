@@ -94,7 +94,7 @@ public class DataTable {
      * <p>Add a record to the table</p>
      *
      * @param record {@link String[]}
-     * @throws NotMatchSizeMetadata
+     * @throws NotMatchSizeMetadata : when record don't match with attributes size
      */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata(table.size()-1);
@@ -106,7 +106,7 @@ public class DataTable {
      * <p>Add an AttributeItem to the table</p>
      *
      * @param attribute {@link AttributeItem}
-     * @throws DuplicatedNameException
+     * @throws DuplicatedNameException : throw when find the same attribute
      */
     public void addAttribute(AttributeItem attribute) throws DuplicatedNameException {
         if (metaData.contains(attribute))throw new DuplicatedNameException(attribute.getAttributeName());
@@ -119,7 +119,7 @@ public class DataTable {
      * <p>Add all AttributeItems to the table</p>
      *
      * @param attribute {@link AttributeItem}
-     * @throws DuplicatedNameException
+     * @throws DuplicatedNameException : throw when add a new attribute and is another equal
      */
     public void addAttributes(ArrayList<AttributeItem> attribute) throws DuplicatedNameException {
         Set<AttributeItem> set = new HashSet<>();
@@ -137,7 +137,7 @@ public class DataTable {
      *
      * @param row int
      * @param record {@link String}
-     * @throws NotMatchSizeMetadata
+     * @throws NotMatchSizeMetadata : throw when record size don`t mach with the metadata size
      */
     public void setRow(int row,String @NotNull [] record) throws NotMatchSizeMetadata{
         if (record.length != metaData.size()) throw new NotMatchSizeMetadata(row);
@@ -151,7 +151,7 @@ public class DataTable {
      *
      * @param row int
      * @return {@link String}[]
-     * @throws TableOverflow
+     * @throws TableOverflow : if they request a record out of bound
      */
     public String[] getRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
@@ -165,7 +165,7 @@ public class DataTable {
      *
      * @param numColumn int
      * @return {@link HashMap}<{@link Integer},{@link String}>
-     * @throws TableOverflow
+     * @throws TableOverflow : if they request a record out of bound
      */
     public HashMap<Integer,String> getColumn(int numColumn) throws TableOverflow {
         if (metaData.size() - 1 < numColumn || numColumn < 0) throw new TableOverflow();
@@ -206,7 +206,7 @@ public class DataTable {
      * @param rowFrom int
      * @param rowTo int
      * @return {@link String[][]}
-     * @throws TableOverflow
+     * @throws TableOverflow : if they request a record out of bound
      */
     public String[][] getRows(int rowFrom, int rowTo) throws TableOverflow {
         if (table.size() - 1 < rowFrom || rowFrom < 0 || table.size() - 1 < rowTo || rowTo < 0) throw new TableOverflow();
@@ -264,7 +264,7 @@ public class DataTable {
      * <p>Remove the selected row</p>
      *
      * @param row int
-     * @throws TableOverflow
+     * @throws TableOverflow : if they request a record out of bound
      */
     public void removeRow(int row) throws TableOverflow {
         if (table.size() - 1 < row || row < 0) throw new TableOverflow();
@@ -327,12 +327,16 @@ public class DataTable {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        for (AttributeItem attribute: metaData){
-            string.append(attribute.getAttributeARRF()).append(",");
+        if (!metaData.isEmpty()) {
+            for (AttributeItem attribute : metaData) {
+                string.append(attribute.getAttributeARRF()).append(",");
+            }
+            string.setCharAt(string.length() - 1, '\n');
+            string.append(addData());
+            string.deleteCharAt(string.length() - 1);
+        } else {
+            return "NaN";
         }
-        string.setCharAt(string.length() - 1, '\n');
-        string.append(addData());
-        string.deleteCharAt(string.length() - 1);
         return string.toString();
     }
 
@@ -351,7 +355,7 @@ public class DataTable {
      * <p>Return the content as ARFF </p>
      *
      * @return {@link String}
-     * @throws NullRelation
+     * @throws NullRelation : if the relation is null
      */
     public String toARFF() throws NullRelation {
         if (relation == null||relation.isEmpty()) throw new NullRelation();

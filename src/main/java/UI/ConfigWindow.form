@@ -35,6 +35,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="ok"/>
+                  <toolTipText resource-bundle="Strings" key="OkToolTip"/>
                 </properties>
               </component>
               <component id="5723f" class="javax.swing.JButton" binding="buttonCancel">
@@ -43,6 +44,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="cancel"/>
+                  <toolTipText resource-bundle="Strings" key="cancelToolTip"/>
                 </properties>
               </component>
               <component id="1b8fe" class="javax.swing.JButton" binding="buttonApply">
@@ -51,6 +53,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="apply"/>
+                  <toolTipText resource-bundle="Strings" key="applyToolTyip"/>
                 </properties>
               </component>
             </children>

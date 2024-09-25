@@ -14,7 +14,7 @@ public class AttributeItem extends Attribute {
 
     //variables and objects
     private JPanel attributePanel;
-    private JComboBox attributeTypeButton;
+    private JComboBox<String> attributeTypeButton;
     private JLabel attributeLabel;
     private JTextField dataInfoText;
     private JCheckBox drop;
@@ -164,5 +164,10 @@ public class AttributeItem extends Attribute {
 
     public boolean isDropColumn(){
         return drop.isSelected();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 }

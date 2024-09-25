@@ -14,6 +14,7 @@
         </constraints>
         <properties>
           <text value="◀"/>
+          <toolTipText resource-bundle="Strings" key="previous"/>
         </properties>
       </component>
       <grid id="c8cf6" binding="viewGraphicsNColumns" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -45,6 +46,7 @@
         </constraints>
         <properties>
           <text value="▶"/>
+          <toolTipText resource-bundle="Strings" key="next"/>
         </properties>
       </component>
       <component id="22b69" class="javax.swing.JLabel" binding="numTableView">

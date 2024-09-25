@@ -18,6 +18,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -36,7 +38,7 @@ public class CSVtoARFF extends JFrame{
 
     //logic components
     private String fileName;
-    private final DataTable table;
+    private static final DataTable table = new DataTable();
 
     //UI components
     private JPanel mainWindow;
@@ -56,14 +58,13 @@ public class CSVtoARFF extends JFrame{
      */
     public CSVtoARFF(){
         //initialize not graphical objects
-        this.table = new DataTable();
-        this.fileName = "";
+        fileName = "";
 
         //set the properties of the window
-        this.setBounds(100,100,750,300);
-        this.setTitle("Seal Translator");
-        this.add(mainWindow);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setBounds(100,100,750,300);
+        setTitle("Seal Translator");
+        add(mainWindow);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         try {
             this.setIconImage(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("sealIcon.png")))).getImage());
         } catch (IOException ex) {
@@ -71,61 +72,24 @@ public class CSVtoARFF extends JFrame{
         }
 
         //add the layout
-        this.layout = new GridBagConstraints();
-        this.layout.fill = GridBagConstraints.VERTICAL;
-        this.layout.gridy = 0;
+        layout = new GridBagConstraints();
+        layout.fill = GridBagConstraints.VERTICAL;
+        layout.gridy = 0;
 
-        //add the menu bar
-        JMenuBar menu = new JMenuBar();
-
-        JMenuItem credits = new JMenuItem("Credits",'c');
-        credits.addActionListener(e->new Credits());
-        credits.setToolTipText("Credits (Alt + C)");
-        menu.add(credits);
-
-        JMenuItem visualize = new JMenuItem("Visualize",'v');
-        visualize.addActionListener(e-> {
-            try {
-                new Visualizer(table,this);
-            } catch (TableOverflow ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        visualize.setToolTipText("Add Comment (Alt + V)");
-        menu.add(visualize);
-
-        JMenuItem addComment = new JMenuItem("Add Comment",'a');
-        addComment.addActionListener(e->openComment());
-        addComment.setToolTipText("Add Comment (Alt + A)");
-        menu.add(addComment);
-
-        JMenuItem configuration = new JMenuItem("Configuration",'c');
-        configuration.addActionListener(e->new ConfigWindow());
-        configuration.setToolTipText("Configuration (Ctrl + C)");
-        menu.add(configuration);
-
-        this.setJMenuBar(menu);
+        addMenu();
 
         //add mnemonics
-        credits.setMnemonic(KeyEvent.VK_C);
-        addComment.setMnemonic(KeyEvent.VK_A);
-        this.importCSVb.setMnemonic(KeyEvent.VK_I);
-        this.exportARFFb.setMnemonic(KeyEvent.VK_E);
+        importCSVb.setMnemonic(KeyEvent.VK_I);
+        exportARFFb.setMnemonic(KeyEvent.VK_E);
 
         //add menu shortcuts
-        this.mainWindow.registerKeyboardAction(e -> new Credits(),      KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        this.mainWindow.registerKeyboardAction(e -> openComment(),      KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        this.mainWindow.registerKeyboardAction(e -> new ConfigWindow(), KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        this.mainWindow.registerKeyboardAction(e -> {
-            try {
-                new Visualizer(table,this);
-            } catch (TableOverflow ex) {
-                throw new RuntimeException(ex);
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        mainWindow.registerKeyboardAction(e -> new Credits(),      KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        mainWindow.registerKeyboardAction(e -> openComment(),      KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        mainWindow.registerKeyboardAction(e -> new ConfigWindow(), KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        mainWindow.registerKeyboardAction(e -> openVisualizer(),   KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         //add listeners
-        this.importCSVb.addActionListener(e->{
+        importCSVb.addActionListener(e->{
             try {
                 openFileChooser();
             } catch (Exception ex) {
@@ -133,7 +97,7 @@ public class CSVtoARFF extends JFrame{
             }
         });
 
-        this.exportARFFb.addActionListener(e->{
+        exportARFFb.addActionListener(e->{
             try {
                 exportARFFBackGround().execute();
             } catch (Exception ex){
@@ -141,14 +105,22 @@ public class CSVtoARFF extends JFrame{
             }
         });
 
-        this.attribute.setDropTarget(new DropTarget() {
+        attribute.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
                 fileDropper(evt);
             }
         });
 
+        addComponentListener ( new ComponentAdapter() {
+            @Override
+            public void componentShown ( ComponentEvent e ) {
+                addAllAttributesToPanel();
+                attribute.revalidate();
+            }
+        } );
+
         //show the window
-        this.setVisible(true);
+        setVisible(true);
     }
 
     /**
@@ -170,7 +142,19 @@ public class CSVtoARFF extends JFrame{
     public void addAttributeToPanel(AttributeItem attributeItem) {
         //moves down the layout
         this.layout.gridy += 1;
+
+        //add the attribute to the panel
         this.attribute.add(attributeItem.getPanel(),this.layout);
+    }
+
+    /**
+     * <h1>addAllAttributesToPanel()</h1>
+     * <p>Add all the attributes from the table to the panel</p>
+     */
+    public void addAllAttributesToPanel(){
+        for (AttributeItem attribute : table.getAttributes()) {
+            addAttributeToPanel(attribute);
+        }
     }
 
     /**
@@ -186,23 +170,31 @@ public class CSVtoARFF extends JFrame{
      * <h1>loadCSV()</h1>
      * <p>Load the data to the program</p>
      */
-    public void loadFile(String path){
-            //Preprocess
-            //reset the attribute panel
-            this.layout.gridy = 0;
-            this.table.clearAll();
-            this.attribute.removeAll();
-            this.scroll.revalidate();
-            this.preprocess.revalidate();
-            this.exportARFFb.setEnabled(true);
+    public void loadFile(String path) {
+        //Preprocess
+        //reset the attribute panel
+        this.layout.gridy = 0;
+        table.clearAll();
+        this.attribute.removeAll();
+        this.scroll.revalidate();
+        this.preprocess.revalidate();
+        this.exportARFFb.setEnabled(true);
 
-            //Process
-            //get the name of the file without the extension CSV
-            this.fileName = path.split("\\.")[0];
+        //Process
+        //get the name of the file without the extension CSV
 
-            loadFileInTheBackGround(path).execute();
+        int dotIndex = path.lastIndexOf('.');
 
-            this.scroll.revalidate();
+        //get the name without extension
+        if (dotIndex > 0 && dotIndex < path.length() - 1) {
+            fileName = path.substring(0,dotIndex);
+        }
+
+        loadFileInTheBackGround(path).execute();
+
+        datasetName.setText(new File(path).getName());
+
+        this.scroll.revalidate();
     }
 
     /**
@@ -218,12 +210,10 @@ public class CSVtoARFF extends JFrame{
         return new SwingWorker<>() {
             //set the work in the background
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground(){
                 try{
-                FileManager.loadFile(table, path);
-                for (AttributeItem attribute : table.getAttributes()) {
-                    addAttributeToPanel(attribute);
-                }
+                    FileManager.loadFile(table, path);
+                    addAllAttributesToPanel();
                 } catch (Exception e){
                     JOptionPane.showMessageDialog(null,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
                     table.clearAll();
@@ -276,7 +266,7 @@ public class CSVtoARFF extends JFrame{
         return new SwingWorker<>() {
             //set the work in the background
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground(){
                 try{
                     exportARFF();
                 } catch (Exception e){
@@ -299,9 +289,15 @@ public class CSVtoARFF extends JFrame{
     private void fileDropper(DropTargetDropEvent evt){
         try {
             evt.acceptDrop(DnDConstants.ACTION_COPY);
+            //create the filter
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    String.join(",",FileManager.SUPPORTEDFORMATS),FileManager.SUPPORTEDFORMATS);
+
             List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             for (File file : droppedFiles) {
-                if (Arrays.stream(FileManager.SUPPORTEDFORMATS).toList().contains(file.getCanonicalPath().trim().toLowerCase().split("\\.")[1])) loadFile(file.getCanonicalPath());
+                if (filter.accept(file) && !file.isDirectory()) {
+                    loadFile(file.getCanonicalPath());
+                }
                 else {
                     throw new FileFormatNotRecognisedException();
                 }
@@ -318,8 +314,8 @@ public class CSVtoARFF extends JFrame{
      * <h1>openFileChooser()</h1>
      * <p>Open the file chooser and import it</p>
      *
-     * @throws IOException
-     * @throws ImportException
+     * @throws IOException : from getCanonicalPath()
+     * @throws ImportException : if {@link JFileChooser} throw an error
      */
     private void openFileChooser() throws IOException, ImportException {
         //initialize File Chooser
@@ -338,5 +334,52 @@ public class CSVtoARFF extends JFrame{
         } else if (returnVal == JFileChooser.ERROR_OPTION) {
             throw new ImportException();
         }
+    }
+
+    /**
+     * <h1>openVisualizer()</h1>
+     * <p>Open the visualizer</p>
+     */
+    private void openVisualizer() {
+        try {
+            new Visualizer(table,this);
+        } catch (TableOverflow ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * <h1>addMenu()</h1>
+     * <p>Add the menu to the window</p>
+     */
+    public void addMenu(){
+        //add the menu bar
+        JMenuBar menu = new JMenuBar();
+
+        JMenuItem credits = new JMenuItem("Credits",'c');
+        credits.addActionListener(e->new Credits());
+        credits.setToolTipText("Credits (Alt + C)");
+        menu.add(credits);
+
+        JMenuItem visualize = new JMenuItem("Visualize",'v');
+        visualize.addActionListener(e->openVisualizer());
+        visualize.setToolTipText("Add Comment (Alt + V)");
+        menu.add(visualize);
+
+        JMenuItem addComment = new JMenuItem("Add Comment",'a');
+        addComment.addActionListener(e->openComment());
+        addComment.setToolTipText("Add Comment (Alt + A)");
+        menu.add(addComment);
+
+        JMenuItem configuration = new JMenuItem("Configuration",'c');
+        configuration.addActionListener(e->new ConfigWindow());
+        configuration.setToolTipText("Configuration (Ctrl + C)");
+        menu.add(configuration);
+
+        this.setJMenuBar(menu);
+
+        //add mnemonic
+        credits.setMnemonic(KeyEvent.VK_C);
+        addComment.setMnemonic(KeyEvent.VK_A);
     }
 }

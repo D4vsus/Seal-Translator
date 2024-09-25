@@ -2,7 +2,6 @@ package logic;
 
 import UI.LoadingScreen;
 import exceptions.ArffAttributeNotRecognised;
-import exceptions.TableOverflow;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -22,14 +21,13 @@ public class AutoAssign {
 
     //variables and objects
     private static String batch = "max";
-    //methods
 
+    //methods
     /**
      * <h1>autoAssignAttributes()</h1>
      * <p>Auto assigns all the attribute in the window</p>
      *
      * @param dataTable {@link DataTable}
-     * @throws TableOverflow
      */
     public static @NotNull SwingWorker<Void, Void> autoAssignAttributes(DataTable dataTable) {
         //initialize the loading screen
@@ -51,7 +49,7 @@ public class AutoAssign {
                         } else if (isDate(column)) {
                             dataTable.getAttributeItem(i).setAttributeTypeARFF("date", "dd-mm-yyyy");
                         } else {
-                            // Create a set to save all the posibles types of nominal data
+                            // Create a set to save all the possibles types of nominal data
                             Set<String> set = new HashSet<>();
 
                             // See the number of iterations

@@ -39,7 +39,7 @@ public class ConfigWindow extends JDialog {
     public ConfigWindow() {
 
         //Set up the window
-        setMainPanel();
+        setContentPane(content);
         setBounds(100,100,500,250);
         setTitle("Configuration");
         setModal(true);
@@ -50,24 +50,12 @@ public class ConfigWindow extends JDialog {
         addListeners();
 
         // call onCancel() on ESCAPE
-        content.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        content.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         // call onApply on A
-        content.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onApply();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        content.registerKeyboardAction(e -> onApply(), KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         setVisible(true);
-    }
-
-    protected void setMainPanel() {
-        setContentPane(content);
     }
 
     /**
@@ -101,6 +89,12 @@ public class ConfigWindow extends JDialog {
      * <p>Apply the configuration to the config class</p>
      */
     protected void applyConfiguration(){
+        Config.setNullString(nullString.isSelected());
+        if (Config.isNullString()) {
+            Config.setNullString(nullStringText.getText());
+        }
+        Config.setDeleteCSComments(deleteCSComments.isSelected());
+        Config.setAutoAssign(autoAssign.isSelected());
         if (autoAssign.isSelected()){
             try {
                 BatchAutoAssignFormat();
@@ -108,12 +102,6 @@ public class ConfigWindow extends JDialog {
                 JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
         }
-        Config.setNullString(nullString.isSelected());
-        if (Config.isNullString()) {
-            Config.setNullString(nullStringText.getText());
-        }
-        Config.setDeleteCSComments(deleteCSComments.isSelected());
-        Config.setAutoAssign(autoAssign.isSelected());
     }
 
     /**
@@ -165,9 +153,9 @@ public class ConfigWindow extends JDialog {
 
     /**
      * <h1>BatchAutoAssignFormat()</h1>
-     * <p>See if the batch is writen correctly</p>
+     * <p>See if the batch is written correctly</p>
      *
-     * @throws BatchFormatException
+     * @throws BatchFormatException : if format is not a number from 1-Int max or max, throw the exception
      */
     private void BatchAutoAssignFormat() throws BatchFormatException {
         String pattern = "^[1-9]\\d*$";

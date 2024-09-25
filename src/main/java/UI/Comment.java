@@ -29,6 +29,7 @@ public class Comment extends JDialog {
      * @param savedComment : {@link StringBuilder}
      */
     public Comment(StringBuilder savedComment) {
+        //set the window parameters
         setContentPane(contentPane);
         setModal(true);
         setTitle("Comment");
@@ -36,6 +37,7 @@ public class Comment extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
         commentArea.setText(savedComment.toString());
 
+        //add listeners
         buttonOK.addActionListener(e -> onOK());
 
         buttonCancel.addActionListener(e -> onCancel());

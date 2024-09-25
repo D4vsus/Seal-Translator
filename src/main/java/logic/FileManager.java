@@ -1,7 +1,6 @@
 package logic;
 
 import UI.AttributeItem;
-import UI.LoadingScreen;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -120,8 +119,6 @@ public class FileManager {
                 }
                 dataTable.addRow(record);
             }
-        } catch (IOException | DuplicatedNameException | NotMatchSizeMetadata | CsvException e){
-            throw e;
         }
     }
 
@@ -131,11 +128,11 @@ public class FileManager {
      *
      * @param dataTable {@link DataTable}
      * @param path {@link String}
-     * @throws IOException
-     * @throws NullPointerException
+     * @throws IOException : from FileInputStream
+     * @throws NullPointerException : if workbook still null
      * @throws NotMatchSizeMetadata
      * @throws DuplicatedNameException
-     * @throws FileFormatNotRecognisedException
+     * @throws FileFormatNotRecognisedException : if it's not a xsl or xslx file
      */
     public static void loadXLSAndXSLX(DataTable dataTable, String path) throws IOException, NullPointerException, NotMatchSizeMetadata, DuplicatedNameException, FileFormatNotRecognisedException {
         //set up the loading bar
@@ -199,16 +196,12 @@ public class FileManager {
                     dataTable.addRow(data);
                 }
 
-        }  catch (IOException|NullPointerException|NotMatchSizeMetadata|DuplicatedNameException|FileFormatNotRecognisedException e){
-            throw e;
-        }
-        finally {
-                // Close resources
-                if (workbook != null) {
-                    workbook.close();
-                }
+        } finally {
+            // Close resources
+            if (workbook != null) {
+                workbook.close();
             }
-
+        }
     }
 
     /**

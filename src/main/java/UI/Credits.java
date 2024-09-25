@@ -18,11 +18,13 @@ import java.util.Objects;
  */
 public class Credits extends JDialog{
 
+    //variables and objects
     private JPanel credits;
     private JLabel madeBy;
     private JLabel bidusaImg;
     private JLabel creator;
 
+    //methods
     public Credits() {
         add(credits);
         setBounds(100,100,500,300);

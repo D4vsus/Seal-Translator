@@ -35,15 +35,16 @@
                   <text resource-bundle="Strings" key="html.b.batch.b.html1"/>
                 </properties>
               </component>
-              <component id="98470" class="javax.swing.JTextField" binding="batchAutoAssignTextField">
+              <component id="98470" class="javax.swing.JTextField" binding="batchViewTextField">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
-                  <text resource-bundle="Strings" key="max"/>
+                  <editable value="true"/>
+                  <enabled value="true"/>
+                  <text value=""/>
                   <toolTipText resource-bundle="Strings" key="set.the.number.of.rows.to.check.of.the.auto.assign"/>
                 </properties>
               </component>
@@ -78,6 +79,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="ok"/>
+                  <toolTipText resource-bundle="Strings" key="OkToolTip"/>
                 </properties>
               </component>
               <component id="e96de" class="javax.swing.JButton" binding="buttonCancel">
@@ -86,6 +88,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="cancel"/>
+                  <toolTipText resource-bundle="Strings" key="cancelToolTip"/>
                 </properties>
               </component>
               <component id="7b14c" class="javax.swing.JButton" binding="buttonApply">
@@ -94,6 +97,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="apply"/>
+                  <toolTipText resource-bundle="Strings" key="applyToolTyip"/>
                 </properties>
               </component>
             </children>

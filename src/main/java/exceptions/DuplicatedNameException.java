@@ -1,5 +1,11 @@
 package exceptions;
 
+/**
+ * <h1>DuplicatedNameException</h1>
+ * <p>throw when found a duplicate name in a table</p>
+ *
+ * @author D4vsus
+ */
 public class DuplicatedNameException extends Exception{
 
     //variables and objects

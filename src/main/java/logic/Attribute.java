@@ -38,4 +38,15 @@ public class Attribute {
     public String getAttributeARRF(){
         return "@attribute " + this.attributeName + " " +this.attributeType;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null){
+            return false;
+        }
+        if (!(obj instanceof Attribute)){
+            return false;
+        }
+        return attributeName.equals(((Attribute) obj).getAttributeName());
+    }
 }

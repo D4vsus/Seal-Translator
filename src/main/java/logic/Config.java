@@ -15,7 +15,6 @@ public class Config {
     private static String nullStringText = "";
     private static int rowsToVisualize = 20;
 
-
     //methods
     public static boolean isDeleteCSComments() {
         return deleteCSComments;
