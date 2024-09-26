@@ -53,7 +53,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="apply"/>
-                  <toolTipText resource-bundle="Strings" key="applyToolTyip"/>
+                  <toolTipText resource-bundle="Strings" key="applyToolTip"/>
                 </properties>
               </component>
             </children>
@@ -84,7 +84,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="auto.assign.arff.values"/>
-                  <toolTipText resource-bundle="Strings" key="auto.assing.the.arff.values.when.loading.the.file"/>
+                  <toolTipText resource-bundle="Strings" key="auto.assign.the.arff.values.when.loading.the.file"/>
                 </properties>
               </component>
               <component id="a8863" class="javax.swing.JRadioButton" binding="deleteCSComments">
@@ -94,7 +94,7 @@
                 <properties>
                   <horizontalAlignment value="10"/>
                   <text resource-bundle="Strings" key="html.b.delete.the.csv.comments.b.html"/>
-                  <toolTipText resource-bundle="Strings" key="delete.the.csv.comments.from.the.begin.of.the.file.comments.must.have.at.the.beggining.a.hash"/>
+                  <toolTipText resource-bundle="Strings" key="delete.the.csv.comments.from.the.begin.of.the.file.comments.must.have.at.the.beginning.a.hash"/>
                 </properties>
               </component>
               <component id="33270" class="javax.swing.JLabel">
@@ -132,7 +132,7 @@
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="&lt;html&gt;&lt;b&gt;Text:&lt;/b&gt;&lt;/html&gt;"/>
+                  <text resource-bundle="Strings" key="html.b.text.b.html"/>
                 </properties>
               </component>
               <component id="67229" class="javax.swing.JTextField" binding="nullStringText">
@@ -143,7 +143,7 @@
                 </constraints>
                 <properties>
                   <enabled value="false"/>
-                  <toolTipText value="Null value text"/>
+                  <toolTipText resource-bundle="Strings" key="null.value.text"/>
                 </properties>
               </component>
             </children>

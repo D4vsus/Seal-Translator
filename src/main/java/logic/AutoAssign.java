@@ -1,7 +1,7 @@
 package logic;
 
 import UI.LoadingScreen;
-import exceptions.ArffAttributeNotRecognised;
+import exceptions.ArffAttributeNotRecognisedException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -67,7 +67,7 @@ public class AutoAssign {
                         }
                         loadingScreen.update();
                     }
-                } catch (ArffAttributeNotRecognised ignore){
+                } catch (ArffAttributeNotRecognisedException ignore){
                     loadingScreen.dispose();
                 }
                 return null;

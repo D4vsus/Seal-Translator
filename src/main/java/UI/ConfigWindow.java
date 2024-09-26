@@ -1,6 +1,6 @@
 package UI;
 
-import exceptions.BatchFormatException;
+import exceptions.BatchFormatAutoAssignException;
 import logic.AutoAssign;
 import logic.Config;
 
@@ -98,7 +98,7 @@ public class ConfigWindow extends JDialog {
         if (autoAssign.isSelected()){
             try {
                 BatchAutoAssignFormat();
-            } catch (BatchFormatException e) {
+            } catch (BatchFormatAutoAssignException e) {
                 JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
             }
         }
@@ -155,12 +155,12 @@ public class ConfigWindow extends JDialog {
      * <h1>BatchAutoAssignFormat()</h1>
      * <p>See if the batch is written correctly</p>
      *
-     * @throws BatchFormatException : if format is not a number from 1-Int max or max, throw the exception
+     * @throws BatchFormatAutoAssignException : if format is not a number from 1-Int max or max, throw the exception
      */
-    private void BatchAutoAssignFormat() throws BatchFormatException {
+    private void BatchAutoAssignFormat() throws BatchFormatAutoAssignException {
         String pattern = "^[1-9]\\d*$";
         if(!Pattern.compile(pattern).matcher(batchAutoAssignTextField.getText()).matches() && !batchAutoAssignTextField.getText().equalsIgnoreCase("max")){
-            throw new BatchFormatException();
+            throw new BatchFormatAutoAssignException();
         } else {
             AutoAssign.setBatch(batchAutoAssignTextField.getText().trim().toLowerCase());
         }

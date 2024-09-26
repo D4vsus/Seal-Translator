@@ -97,7 +97,7 @@
                 </constraints>
                 <properties>
                   <text resource-bundle="Strings" key="apply"/>
-                  <toolTipText resource-bundle="Strings" key="applyToolTyip"/>
+                  <toolTipText resource-bundle="Strings" key="applyToolTip"/>
                 </properties>
               </component>
             </children>

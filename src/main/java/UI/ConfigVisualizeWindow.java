@@ -1,6 +1,6 @@
 package UI;
 
-import exceptions.BatchFormatException;
+import exceptions.BatchFormatTableViewException;
 import logic.AutoAssign;
 import logic.Config;
 
@@ -89,7 +89,7 @@ public class ConfigVisualizeWindow extends JDialog{
         try {
             BatchFormat();
             Config.setRowsToVisualize(Integer.parseInt(batchViewTextField.getText()));
-        } catch (BatchFormatException e) {
+        } catch (BatchFormatTableViewException e) {
             JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
     }
@@ -127,15 +127,15 @@ public class ConfigVisualizeWindow extends JDialog{
      * <h1>BatchFormat()</h1>
      * <p>See if the batch is written correctly</p>
      *
-     * @throws BatchFormatException : if the format not match
+     * @throws BatchFormatTableViewException : if the format not match
      */
-    private void BatchFormat() throws BatchFormatException {
+    private void BatchFormat() throws BatchFormatTableViewException {
         // natural numbers from 1-infinite
         String pattern = "^[1-9]\\d*$";
 
         //if not match throw the exception
         if(!Pattern.compile(pattern).matcher(batchViewTextField.getText()).matches()){
-            throw new BatchFormatException();
+            throw new BatchFormatTableViewException();
         } else {
             AutoAssign.setBatch(batchViewTextField.getText().trim().toLowerCase());
         }

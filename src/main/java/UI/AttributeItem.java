@@ -1,6 +1,6 @@
 package UI;
 
-import exceptions.ArffAttributeNotRecognised;
+import exceptions.ArffAttributeNotRecognisedException;
 import logic.Attribute;
 
 import javax.swing.*;
@@ -110,7 +110,7 @@ public class AttributeItem extends Attribute {
      *
      * @param format {@link String...}(first the type, second for date or nominal)
      */
-    public void setAttributeTypeARFF(String... format) throws ArffAttributeNotRecognised {
+    public void setAttributeTypeARFF(String... format) throws ArffAttributeNotRecognisedException {
         switch (format[0]){
             case "string":
                 this.attributeTypeButton.setSelectedIndex(1);
@@ -130,7 +130,7 @@ public class AttributeItem extends Attribute {
                 this.dataInfoText.setText(format[1]);
                 break;
             default:
-                throw new ArffAttributeNotRecognised();
+                throw new ArffAttributeNotRecognisedException();
         }
     }
 
