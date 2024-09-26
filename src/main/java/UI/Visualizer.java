@@ -188,6 +188,7 @@ public class Visualizer extends JFrame{
         numTableView.setText((rowsCursor + 1)+"/"+(size/Config.getRowsToVisualize() + ((size%Config.getRowsToVisualize() > 0)?1:0)));
 
         tableView.setModel(tableModel);
+        tableView.getTableHeader().setReorderingAllowed(false);
 
         nextView.setEnabled(((rowsCursor + 1) * Config.getRowsToVisualize()) < size);
         previousView.setEnabled(rowsCursor > 0);
