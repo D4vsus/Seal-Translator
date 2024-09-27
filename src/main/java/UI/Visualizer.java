@@ -7,23 +7,18 @@ import logic.DataTable;
 import logic.FileManager;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <h1>Visualizer</h1>
@@ -31,7 +26,7 @@ import java.util.Objects;
  *
  * @author D4vsus
  */
-public class Visualizer extends JFrame{
+public class Visualizer {
 
     //variables and objects
     private JPanel visualizeWindow;
@@ -53,67 +48,56 @@ public class Visualizer extends JFrame{
      * <p>Initialize the class</p>
      *
      * @param table {@link DataTable}
-     * @param parentFrame {@link DataTable}
      * @throws TableOverflow : if they get out of the table
      */
-    public Visualizer(@NotNull DataTable table,JFrame parentFrame) throws TableOverflow {
+    public Visualizer(@NotNull DataTable table) throws TableOverflow {
 
         this.table = table;
         size = table.size();
         rowsCursor = 0;
 
-        //set the properties of the window
-        setTitle("Visualizer");
-        try {
-            this.setIconImage(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("sealIcon.png")))).getImage());
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
-        }
-        setBounds(100,100,600,400);
-        add(visualizeWindow);
-        setResizable(true);
-        setUndecorated(false);
-        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
-
         loadTable();
+        addListeners();
+        addShortCuts();
+    }
 
-        //menu
-        JMenuBar menu = new JMenuBar();
+    /**
+     * <h1>addShortCuts()</h1>
+     * <p>Add all the shortcuts to the window</p>
+     */
+    public void addShortCuts(){
+        visualizeWindow.registerKeyboardAction(e -> getBackToMainWindow(),KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        visualizeWindow.registerKeyboardAction(e -> openConfiguration(),KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        visualizeWindow.registerKeyboardAction(e -> nextTable(),KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        visualizeWindow.registerKeyboardAction(e -> previousTable(),KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
 
-        JMenuItem credits = new JMenuItem("Configuration",'c');
-        credits.addActionListener(e->openConfiguration());
-        credits.setToolTipText("Configuration View (Alt + C)");
-        menu.add(credits);
-
-        setJMenuBar(menu);
-
-        //listeners
+    /**
+     * <h1>addListeners()</h1>
+     * <p>Add all the listeners to the window</p>
+     */
+    private void addListeners(){
         nextView.addActionListener(e-> nextTable());
         previousView.addActionListener(e-> previousTable());
 
-        this.visualizeWindow.setDropTarget(new DropTarget() {
+        visualizeWindow.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                try {
+                    size = table.size();
+                    rowsCursor = 0;
+                    loadTable();
+                } catch (TableOverflow ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        visualizeWindow.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
                 fileDropper(evt);
             }
         });
-
-        //keyboard shortcut
-        visualizeWindow.registerKeyboardAction(e -> nextTable(),KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        visualizeWindow.registerKeyboardAction(e -> previousTable(),KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-        //set closing action
-        addWindowListener(new WindowAdapter(){
-            //when close the window, set visible again the parent
-            @Override
-            public void windowClosing(WindowEvent e){
-                parentFrame.setVisible(true);
-                dispose();
-            }
-        });
-
-        //set visible
-        parentFrame.setVisible(false);
-        setVisible(true);
     }
 
     /**
@@ -140,7 +124,7 @@ public class Visualizer extends JFrame{
                 loadTable();
             }
         } catch (TableOverflow e){
-            JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            JOptionPane.showMessageDialog(visualizeWindow,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
     }
 
@@ -155,8 +139,42 @@ public class Visualizer extends JFrame{
                 loadTable();
             }
         } catch (TableOverflow e){
-            JOptionPane.showMessageDialog(this,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            JOptionPane.showMessageDialog(visualizeWindow,e.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
+    }
+
+    /**
+     * <h1>getBackToMainWindow()</h1>
+     * <p>set visible again the attribute window</p>
+     */
+    private void getBackToMainWindow(){
+        ((CardLayout)visualizeWindow.getParent().getLayout()).show(visualizeWindow.getParent(),CSVtoARFF.getPanelID());
+    }
+
+    /**
+     * <h1>getVisualizerMenu()</h1>
+     * <p>return the visualize menu of the visualizer</p>
+     *
+     * @return {@link JMenuBar}
+     */
+    public JMenuBar getVisualizerMenu(){
+        //menu
+        JMenuBar menu = new JMenuBar();
+
+        JMenuItem configuration = new JMenuItem("Configuration",'c');
+        configuration.addActionListener(e->openConfiguration());
+        configuration.setToolTipText("Configuration View (Alt + C)");
+        menu.add(configuration);
+
+        JMenuItem attributes = new JMenuItem("Attributes",'a');
+        attributes.addActionListener(e->getBackToMainWindow());
+        attributes.setToolTipText("Get you back to Attribute Window (Alt + A)");
+        menu.add(attributes);
+
+        attributes.setMnemonic(KeyEvent.VK_A);
+        configuration.setMnemonic(KeyEvent.VK_C);
+
+        return menu;
     }
 
     /**
@@ -166,6 +184,7 @@ public class Visualizer extends JFrame{
      * @throws TableOverflow :if they get put of the table
      */
     public void loadTable() throws TableOverflow {
+        size = table.size();
         //all cells false
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
@@ -195,6 +214,26 @@ public class Visualizer extends JFrame{
     }
 
     /**
+     * <h1>getVisualizeWindow()</h1>
+     * <p>return the Visualizer panel</p>
+     *
+     * @return {@link JPanel}
+     */
+    public JPanel getVisualizeWindow(){
+        return visualizeWindow;
+    }
+
+    /**
+     * <h1>getPanelID()</h1>
+     * <p>Return the panel ID</p>
+     *
+     * @return {@link String} : ID of the panel
+     */
+    public static String getPanelID(){
+        return "Visualizer";
+    }
+
+    /**
      * <h1>fileDropper()</h1>
      * <p>set the drop file to the attribute panel</p>
      *
@@ -221,9 +260,9 @@ public class Visualizer extends JFrame{
             }
             evt.dropComplete(true);
         } catch (ClassCastException | UnsupportedFlavorException ex){
-            JOptionPane.showMessageDialog(this,"Error: you haven't drop a file. Please drop a csv","Error",JOptionPane.ERROR_MESSAGE,null);
+            JOptionPane.showMessageDialog(visualizeWindow,"Error: you haven't drop a file. Please drop a csv","Error",JOptionPane.ERROR_MESSAGE,null);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
+            JOptionPane.showMessageDialog(visualizeWindow,ex.toString(),"Error",JOptionPane.ERROR_MESSAGE,null);
         }
     }
 }

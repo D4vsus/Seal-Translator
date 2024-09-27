@@ -41,6 +41,7 @@ public class CSVtoARFF extends JFrame{
     private static final DataTable table = new DataTable();
 
     //UI components
+
     private JPanel mainWindow;
     private JButton importCSVb;
     private JButton exportARFFb;
@@ -48,7 +49,9 @@ public class CSVtoARFF extends JFrame{
     private JTextField datasetName;
     private JScrollPane scroll;
     private JPanel attribute;
-    private final GridBagConstraints layout;
+    private final GridBagConstraints attributeLayout;
+    private final CardLayout windowLayout;
+    private final Visualizer visualizer;
 
     //methods
 
@@ -56,14 +59,21 @@ public class CSVtoARFF extends JFrame{
      * <h1>CSVtoARFF()</h1>
      * <p>Instantiate the window</p>
      */
-    public CSVtoARFF(){
+    public CSVtoARFF() throws TableOverflow {
         //initialize not graphical objects
         fileName = "";
 
         //set the properties of the window
+
+        windowLayout = new CardLayout();
+        setLayout(windowLayout);
+
         setBounds(100,100,750,300);
         setTitle("Seal Translator");
-        add(mainWindow);
+        add(mainWindow,getPanelID());
+        visualizer = new Visualizer(table);
+        add(visualizer.getVisualizeWindow(),Visualizer.getPanelID());
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         try {
             this.setIconImage(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("sealIcon.png")))).getImage());
@@ -72,9 +82,9 @@ public class CSVtoARFF extends JFrame{
         }
 
         //add the layout
-        layout = new GridBagConstraints();
-        layout.fill = GridBagConstraints.VERTICAL;
-        layout.gridy = 0;
+        attributeLayout = new GridBagConstraints();
+        attributeLayout.fill = GridBagConstraints.VERTICAL;
+        attributeLayout.gridy = 0;
 
         addMenu();
 
@@ -82,13 +92,44 @@ public class CSVtoARFF extends JFrame{
         importCSVb.setMnemonic(KeyEvent.VK_I);
         exportARFFb.setMnemonic(KeyEvent.VK_E);
 
+        addShortCuts();
+        addListeners();
+
+        //show the window
+        setVisible(true);
+    }
+
+    /**
+     * <h1>addShortCuts()</h1>
+     * <p>Add all the shortcuts to the window</p>
+     */
+    private void addShortCuts(){
         //add menu shortcuts
         mainWindow.registerKeyboardAction(e -> new Credits(),      KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         mainWindow.registerKeyboardAction(e -> openComment(),      KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         mainWindow.registerKeyboardAction(e -> new ConfigWindow(), KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         mainWindow.registerKeyboardAction(e -> openVisualizer(),   KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.ALT_DOWN_MASK), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+    }
+
+    /**
+     * <h1>addListeners()</h1>
+     * <p>Add all the listeners to the window</p>
+     */
+    private void addListeners(){
         //add listeners
+        mainWindow.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                mainWindow.requestFocus();
+                addMenu();
+                if(!table.getAttributes().isEmpty()) {
+                    addAllAttributesToPanel();
+                    exportARFFb.setEnabled(true);
+                }
+            }
+        });
+
         importCSVb.addActionListener(e->{
             try {
                 openFileChooser();
@@ -118,9 +159,6 @@ public class CSVtoARFF extends JFrame{
                 attribute.revalidate();
             }
         } );
-
-        //show the window
-        setVisible(true);
     }
 
     /**
@@ -141,10 +179,10 @@ public class CSVtoARFF extends JFrame{
      */
     public void addAttributeToPanel(AttributeItem attributeItem) {
         //moves down the layout
-        this.layout.gridy += 1;
+        this.attributeLayout.gridy += 1;
 
         //add the attribute to the panel
-        this.attribute.add(attributeItem.getPanel(),this.layout);
+        this.attribute.add(attributeItem.getPanel(),this.attributeLayout);
     }
 
     /**
@@ -173,7 +211,7 @@ public class CSVtoARFF extends JFrame{
     public void loadFile(String path) {
         //Preprocess
         //reset the attribute panel
-        this.layout.gridy = 0;
+        this.attributeLayout.gridy = 0;
         table.clearAll();
         this.attribute.removeAll();
         this.scroll.revalidate();
@@ -341,11 +379,9 @@ public class CSVtoARFF extends JFrame{
      * <p>Open the visualizer</p>
      */
     private void openVisualizer() {
-        try {
-            new Visualizer(table,this);
-        } catch (TableOverflow ex) {
-            throw new RuntimeException(ex);
-        }
+        windowLayout.show(this.getContentPane(),Visualizer.getPanelID());
+        visualizer.getVisualizeWindow().requestFocus();
+        setJMenuBar(visualizer.getVisualizerMenu());
     }
 
     /**
@@ -363,7 +399,7 @@ public class CSVtoARFF extends JFrame{
 
         JMenuItem visualize = new JMenuItem("Visualize",'v');
         visualize.addActionListener(e->openVisualizer());
-        visualize.setToolTipText("Add Comment (Alt + V)");
+        visualize.setToolTipText("Show visualize window (Alt + V)");
         menu.add(visualize);
 
         JMenuItem addComment = new JMenuItem("Add Comment",'a');
@@ -376,10 +412,22 @@ public class CSVtoARFF extends JFrame{
         configuration.setToolTipText("Configuration (Ctrl + C)");
         menu.add(configuration);
 
-        this.setJMenuBar(menu);
+        setJMenuBar(menu);
 
         //add mnemonic
         credits.setMnemonic(KeyEvent.VK_C);
+        configuration.setMnemonic(KeyEvent.VK_C);
+        visualize.setMnemonic(KeyEvent.VK_V);
         addComment.setMnemonic(KeyEvent.VK_A);
+    }
+
+    /**
+     * <h1>getPanelID()</h1>
+     * <p>Return the panel ID</p>
+     *
+     * @return {@link String} : ID of the panel
+     */
+    public static String getPanelID(){
+        return "Main Window";
     }
 }
