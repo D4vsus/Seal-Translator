@@ -180,7 +180,7 @@ public class FileManager {
                     ArrayList<String> data = getRows(row);
 
                     //break if the rows is empty
-                    if (data.isEmpty()){
+                    if (data.stream().allMatch(String::isBlank)){
                         break;
                     }
 
@@ -217,7 +217,7 @@ public class FileManager {
                     data.add(String.valueOf(cell.getBooleanCellValue()));
                     break;
                 default:
-
+                    data.add("");
             }
         }
         return data;

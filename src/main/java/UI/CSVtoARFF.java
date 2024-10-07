@@ -230,7 +230,7 @@ public class CSVtoARFF extends JFrame{
 
         loadFileInTheBackGround(path).execute();
 
-        datasetName.setText(new File(path).getName());
+        datasetName.setText(new File(path).getName().replace(" ","_"));
 
         this.scroll.revalidate();
     }

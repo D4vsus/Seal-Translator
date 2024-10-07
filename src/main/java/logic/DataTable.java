@@ -97,7 +97,7 @@ public class DataTable {
      * @throws NotMatchSizeMetadata : when record don't match with attributes size
      */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
-        if (record.length != metaData.size()) throw new NotMatchSizeMetadata(table.size()+1);//return the error line starting from 1
+        if (record.length != metaData.size()) throw new NotMatchSizeMetadata(table.size() + 2);//return the error line starting from 1 without the header
         table.put(table.size(),new ArrayList<>(Arrays.asList(record)));
     }
 
@@ -293,23 +293,27 @@ public class DataTable {
         int column;
         StringBuilder string = new StringBuilder();
         for (int row = 0;row < table.size();row++) {
-            column = -1;
+            column = 0;
             for (String cell : table.get(row)){
-                column++;
-                // If column is not droppable
+
+                // If column is droppable
                 if (droppableColumns().contains(column)) {continue;}
+
                 // If cell is null or if they contain the null text
                 if (!cell.isBlank() && !cell.equals(Config.getNullString())) {
+
                     // See if it's nominal to replace spaces with "-"
                     if (!metaData.get(column).getAttributeType().equals("nominal")){
                         string.append(cell);
                     } else {
                         string.append(cell.replace(" ","-"));
                     }
+
                 } else {
                     string.append("?");
                 }
                 string.append(",");
+                column++;
             }
             if (!string.isEmpty()) {
                 string.setCharAt(string.length() - 1, '\n');
