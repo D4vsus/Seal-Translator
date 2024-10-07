@@ -30,6 +30,7 @@ public class ConfigWindow extends JDialog {
     private JTextField batchAutoAssignTextField;
     private JRadioButton nullString;
     private JTextField nullStringText;
+    private JRadioButton addQuotesToStringAttributes;
 
     //methods
     /**
@@ -90,6 +91,9 @@ public class ConfigWindow extends JDialog {
      */
     protected void applyConfiguration(){
         Config.setNullString(nullString.isSelected());
+
+        Config.setAddQuotesToStringAttributes(addQuotesToStringAttributes.isSelected());
+
         if (Config.isNullString()) {
             Config.setNullString(nullStringText.getText());
         }
@@ -110,6 +114,8 @@ public class ConfigWindow extends JDialog {
      */
     protected void setDefaultConfiguration(){
         deleteCSComments.setSelected(Config.isDeleteCSComments());
+
+        addQuotesToStringAttributes.setSelected(Config.isAddQuotesToStringAttributes());
 
         autoAssign.setSelected(Config.isAutoAssign());
         batchAutoAssignTextField.setEnabled(Config.isAutoAssign());

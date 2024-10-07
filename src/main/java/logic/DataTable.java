@@ -8,6 +8,7 @@ import exceptions.TableOverflow;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * <h1>DataTable</h1>
@@ -296,6 +297,8 @@ public class DataTable {
             column = 0;
             for (String cell : table.get(row)){
 
+                cell = convertStringQuotes(cell);
+
                 // If column is droppable
                 if (droppableColumns().contains(column)) {continue;}
 
@@ -304,7 +307,15 @@ public class DataTable {
 
                     // See if it's nominal to replace spaces with "-"
                     if (!metaData.get(column).getAttributeType().equals("nominal")){
-                        string.append(cell);
+
+                        // See if it's a string type, doesn't have quotes between them and is Configuration active
+                        Pattern pattern = Pattern.compile("^'[^']*'$");
+                        if (Config.isAddQuotesToStringAttributes() && !pattern.matcher(cell).matches() && metaData.get(column).getAttributeType().equals("string")){
+                            string.append("'").append(cell).append("'");
+                        } else {
+                            string.append(cell);
+                        }
+
                     } else {
                         string.append(cell.replace(" ","-"));
                     }
@@ -312,6 +323,7 @@ public class DataTable {
                 } else {
                     string.append("?");
                 }
+
                 string.append(",");
                 column++;
             }
@@ -320,6 +332,24 @@ public class DataTable {
             }
         }
         return string.toString();
+    }
+
+    /**
+     * <h1>convertStringQuotes()</h1>
+     * <p>Return the String converting the ' to \' except if it's between ''</p>
+     *
+     * @param string : {@link String}
+     * @return {@link String}
+     */
+    public String convertStringQuotes(String string){
+        // if is between quotes
+        if (string.startsWith("'") && string.endsWith("'") && string.length() > 2){
+            // Replace ' with \' in the middle part of the string (excluding the first and last character)
+            return string.charAt(0) + string.substring(1, string.length() - 1).replace("'", "\\'") + string.charAt(string.length() - 1);
+        } else {
+            // Replace ' with \'
+            return string.replace("'","\\'");
+        }
     }
 
     /**

@@ -89,10 +89,10 @@ public class AutoAssign {
      * @return boolean
      */
     private static boolean isNumber(HashMap<Integer,String> column){
-        String realNumberPattern = "^[+-]?\\d+(\\.\\d+)?$";
+        String stringPattern = "^[+-]?\\d+(\\.\\d+)?$";
 
         // Compile the regular expression
-        Pattern pattern = Pattern.compile(realNumberPattern);
+        Pattern pattern = Pattern.compile(stringPattern);
 
         // See the number of iterations
         int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);
@@ -115,10 +115,10 @@ public class AutoAssign {
      * @return boolean
      */
     private static boolean isString(HashMap<Integer,String> column){
-        String realNumberPattern = "^'[^']*'$";
+        String stringPattern = "^'[^']*'$";
 
         // Compile the regular expression
-        Pattern pattern = Pattern.compile(realNumberPattern);
+        Pattern pattern = Pattern.compile(stringPattern);
 
         // See the number of iterations
         int batch = (AutoAssign.batch.equals("max") || Integer.parseInt(AutoAssign.batch) >= column.size())?column.size():Integer.parseInt(AutoAssign.batch);

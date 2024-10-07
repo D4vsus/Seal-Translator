@@ -4,6 +4,7 @@ import exceptions.ArffAttributeNotRecognisedException;
 import logic.Attribute;
 
 import javax.swing.*;
+
 /**
  * <h1>AttributeItem</h1>
  * <p>Manage attributes UI</p>
@@ -141,7 +142,7 @@ public class AttributeItem extends Attribute {
      * @return {@link String}
      */
     public String toARFF(){
-      return "@attribute " + this.getAttributeName() +" "+  getAttributeTypeARFF();
+        return "@attribute " + getAttributeName() +" "+  getAttributeTypeARFF();
     }
 
     /**

@@ -14,6 +14,7 @@ public class Config {
     private static boolean nullString = false;
     private static String nullStringText = "";
     private static int rowsToVisualize = 20;
+    private static boolean addQuotesToStringAttributes = true;
 
     //methods
     public static boolean isDeleteCSComments() {
@@ -22,6 +23,9 @@ public class Config {
     public static void setDeleteCSComments(boolean deleteCSComments) {
         Config.deleteCSComments = deleteCSComments;
     }
+
+    public static boolean isAddQuotesToStringAttributes() {return addQuotesToStringAttributes;}
+    public static void setAddQuotesToStringAttributes(boolean addQuotesToStringAttributes) {Config.addQuotesToStringAttributes = addQuotesToStringAttributes;}
 
     public static boolean isAutoAssign() {return autoAssign;}
     public static void setAutoAssign(boolean autoAssign) {Config.autoAssign = autoAssign;}
