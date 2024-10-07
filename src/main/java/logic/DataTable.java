@@ -97,7 +97,7 @@ public class DataTable {
      * @throws NotMatchSizeMetadata : when record don't match with attributes size
      */
     public void addRow(String @NotNull [] record) throws NotMatchSizeMetadata {
-        if (record.length != metaData.size()) throw new NotMatchSizeMetadata(table.size()-1);
+        if (record.length != metaData.size()) throw new NotMatchSizeMetadata(table.size()+1);//return the error line starting from 1
         table.put(table.size(),new ArrayList<>(Arrays.asList(record)));
     }
 

@@ -9,6 +9,7 @@ import com.opencsv.exceptions.CsvException;
 import exceptions.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -176,24 +177,14 @@ public class FileManager {
                 Row row;
                 while (iterator.hasNext()) {
                     row = iterator.next();
-                    String[] data = new String[row.getLastCellNum()];
-                    for (Cell cell : row) {
-                        // Process each cell based on its type
-                        switch (cell.getCellType()) {
-                            case STRING:
-                                data[cell.getColumnIndex()] = cell.getStringCellValue();
-                                break;
-                            case NUMERIC:
-                                data[cell.getColumnIndex()] = ""+cell.getNumericCellValue();
-                                break;
-                            case BOOLEAN:
-                                data[cell.getColumnIndex()] = "" + cell.getBooleanCellValue();
-                                break;
-                            default:
+                    ArrayList<String> data = getRows(row);
 
-                        }
+                    //break if the rows is empty
+                    if (data.isEmpty()){
+                        break;
                     }
-                    dataTable.addRow(data);
+
+                    dataTable.addRow(data.toArray(new String[0]));
                 }
 
         } finally {
@@ -202,6 +193,34 @@ public class FileManager {
                 workbook.close();
             }
         }
+    }
+
+    /**
+     * <h1>getRows()</h1>
+     * <p>Parse the row types and return the content as an array list of strings</p>
+     *
+     * @param row {@link ArrayList}<{@link String}>
+     * @return ArrayList<String>
+     */
+    private static @NotNull ArrayList<String> getRows(Row row) {
+        ArrayList<String> data = new ArrayList<>();
+        for (Cell cell : row) {
+            // Process each cell based on its type
+            switch (cell.getCellType()) {
+                case STRING:
+                    data.add(cell.getStringCellValue());
+                    break;
+                case NUMERIC:
+                    data.add(String.valueOf(cell.getNumericCellValue()));
+                    break;
+                case BOOLEAN:
+                    data.add(String.valueOf(cell.getBooleanCellValue()));
+                    break;
+                default:
+
+            }
+        }
+        return data;
     }
 
     /**
