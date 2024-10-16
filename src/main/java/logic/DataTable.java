@@ -298,33 +298,33 @@ public class DataTable {
             for (String cell : table.get(row)){
 
                 cell = convertStringQuotes(cell);
-
                 // If column is droppable
-                if (droppableColumns().contains(column)) {continue;}
+                if (!droppableColumns().contains(column)){
 
-                // If cell is null or if they contain the null text
-                if (!cell.isBlank() && !cell.equals(Config.getNullString())) {
+                    // If cell is null or if they contain the null text
+                    if (!cell.isBlank() && !cell.equals(Config.getNullString())) {
 
-                    // See if it's nominal to replace spaces with "-"
-                    if (!metaData.get(column).getAttributeType().equals("nominal")){
+                        // See if it's nominal to replace spaces with "-"
+                        if (!metaData.get(column).getAttributeType().equals("nominal")) {
 
-                        // See if it's a string type, doesn't have quotes between them and is Configuration active
-                        Pattern pattern = Pattern.compile("^'[^']*'$");
-                        if (Config.isAddQuotesToStringAttributes() && !pattern.matcher(cell).matches() && metaData.get(column).getAttributeType().equals("string")){
-                            string.append("'").append(cell).append("'");
+                            // See if it's a string type, doesn't have quotes between them and is Configuration active
+                            Pattern pattern = Pattern.compile("^'[^']*'$");
+                            if (Config.isAddQuotesToStringAttributes() && !pattern.matcher(cell).matches() && metaData.get(column).getAttributeType().equals("string")) {
+                                string.append("'").append(cell).append("'");
+                            } else {
+                                string.append(cell);
+                            }
+
                         } else {
-                            string.append(cell);
+                            string.append(cell.replace(" ", "-"));
                         }
 
                     } else {
-                        string.append(cell.replace(" ","-"));
+                        string.append("?");
                     }
 
-                } else {
-                    string.append("?");
+                    string.append(",");
                 }
-
-                string.append(",");
                 column++;
             }
             if (!string.isEmpty()) {
